@@ -11,7 +11,12 @@ module org.example.calenjax {
     requires eu.hansolo.tilesfx;
     requires com.almasb.fxgl.all;
     requires ical4j.core;
+        requires com.fasterxml.jackson.databind;
 
-    opens org.example.calenjax to javafx.fxml;
+        opens org.example.calenjax to javafx.fxml;
     exports org.example.calenjax;
-}
+        exports org.example.calenjax.Controlleurs;
+        opens org.example.calenjax.Controlleurs to javafx.fxml;
+        exports org.example.calenjax.models;
+        opens org.example.calenjax.models to javafx.fxml;
+    }
