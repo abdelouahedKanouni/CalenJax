@@ -1,12 +1,9 @@
-package org.example.calenjax;
+package org.example.calenjax.Controlleurs;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
-
-import java.io.IOException;
-import java.text.ParseException;
-import java.util.List;
+import org.example.calenjax.Event;
 
 public class HomePageController {
     @FXML

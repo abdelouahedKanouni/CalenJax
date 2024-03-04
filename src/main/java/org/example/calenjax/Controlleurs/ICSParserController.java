@@ -1,4 +1,4 @@
-package org.example.calenjax;
+package org.example.calenjax.Controlleurs;
 
 
 import net.fortuna.ical4j.data.CalendarBuilder;
@@ -7,6 +7,8 @@ import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.model.Component;
 import net.fortuna.ical4j.model.DateTime;
 import net.fortuna.ical4j.model.Period;
+import org.example.calenjax.Event;
+import org.example.calenjax.HelloApplication;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -23,7 +25,7 @@ public class ICSParserController {
             System.out.println(HelloApplication.class.getResource("test.ics"));
             System.out.println("chaussure0");
 
-            FileInputStream fin = new FileInputStream("C:/Users/romai/Documents/M1/semestre2/serveur_app/CalenJax/target/classes/org/example/calenjax/test.ics");
+            FileInputStream fin = new FileInputStream("C:/Users/AbdelouahedKANOUNI/IdeaProjects/CalenJax/src/main/resources/org/example/calenjax/test.ics");
             CalendarBuilder builder = new CalendarBuilder();
             Calendar calendar = builder.build(fin);
 
