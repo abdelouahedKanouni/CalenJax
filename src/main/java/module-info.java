@@ -10,6 +10,7 @@ module org.example.calenjax {
     requires org.kordamp.bootstrapfx.core;
     requires eu.hansolo.tilesfx;
     requires com.almasb.fxgl.all;
+    requires ical4j.core;
 
     opens org.example.calenjax to javafx.fxml;
     exports org.example.calenjax;
