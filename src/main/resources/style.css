@@ -17,8 +17,22 @@
 .event-button {
     -fx-background-color: #D1E8FF;
     -fx-background-radius: 5 5 5 5;
+    -fx-border-color: #EDEDED;
+    -fx-border-width: 1 1 1 1;
+    -fx-content-display: top;
+    -fx-alignment: top-left;
 }
 
 .event-button:hover {
     -fx-background-color: #1E90FF;
+}
+
+.event-button-gray {
+    -fx-background-color: #F1F2F3;
+    -fx-content-display: top;
+    -fx-alignment: top-left;
+    -fx-background-radius: 5 5 5 5;
+    -fx-border-color: gray;
+    -fx-border-width: 10 0 0 0;
+    -fx-text-color: #D5DCE2;
 }

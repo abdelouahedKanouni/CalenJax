@@ -12,8 +12,9 @@ module org.example.calenjax {
     requires com.almasb.fxgl.all;
     requires org.mnode.ical4j.core;
         requires com.fasterxml.jackson.databind;
+    requires annotations;
 
-        opens org.example.calenjax to javafx.fxml;
+    opens org.example.calenjax to javafx.fxml;
     exports org.example.calenjax;
         exports org.example.calenjax.Controlleurs;
         opens org.example.calenjax.Controlleurs to javafx.fxml;
