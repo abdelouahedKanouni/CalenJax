@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.example.calenjax.Controlleurs.HomePageController;
 
 import java.io.IOException;
 
@@ -12,6 +13,10 @@ public class HelloApplication extends Application {
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("home-page.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 1400, 700);
+
+        HomePageController controller = fxmlLoader.getController();
+        controller.setPrimaryStage(stage);
+
         scene.getStylesheets().add("style.css");
         stage.setTitle("Hello!");
         stage.setScene(scene);

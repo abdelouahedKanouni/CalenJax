@@ -6,6 +6,8 @@
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuButton?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
@@ -17,6 +19,11 @@
    <top>
       <VBox prefHeight="249.0" prefWidth="1463.0" BorderPane.alignment="CENTER">
          <children>
+            <ImageView fx:id="homeImage" fitHeight="130.0" fitWidth="1479.0">
+               <image>
+                  <Image url="@images/home.png" />
+               </image>
+            </ImageView>
             <MenuBar>
               <menus>
                 <Menu mnemonicParsing="false" text="Personnel">
@@ -36,9 +43,9 @@
                 </Menu>
               </menus>
             </MenuBar>
-            <VBox prefHeight="176.0" prefWidth="1463.0">
+            <VBox prefHeight="924.0" prefWidth="1602.0">
                <children>
-                  <HBox prefHeight="132.0" prefWidth="1463.0">
+                  <HBox prefHeight="118.0" prefWidth="1602.0">
                      <children>
                         <HBox alignment="CENTER" prefHeight="69.0" prefWidth="219.0">
                            <children>
@@ -47,20 +54,20 @@
                         </HBox>
                      </children>
                   </HBox>
-                  <HBox prefHeight="119.0" prefWidth="1463.0">
+                  <HBox prefHeight="119.0" prefWidth="1602.0">
                      <children>
                         <HBox alignment="CENTER" prefHeight="50.0" prefWidth="180.0">
                            <children>
                               <MenuButton mnemonicParsing="false" prefHeight="26.0" prefWidth="122.0" text="MenuButton">
                                 <items>
-                                  <MenuItem mnemonicParsing="false" text="Jour" />
-                                  <MenuItem mnemonicParsing="false" text="Semaine" />
-                                    <MenuItem mnemonicParsing="false" text="Mois" />
+                                  <MenuItem fx:id="buttonDay" mnemonicParsing="false" onAction="#handleButtonActionCalendar" text="Jour" />
+                                  <MenuItem fx:id="buttonWeek" mnemonicParsing="false" onAction="#handleButtonActionCalendar" text="Semaine" />
+                                    <MenuItem fx:id="buttonMonth" mnemonicParsing="false" onAction="#handleButtonActionCalendar" text="Mois" />
                                 </items>
                               </MenuButton>
                            </children>
                         </HBox>
-                        <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
+                        <HBox alignment="CENTER" prefHeight="45.0" prefWidth="234.0">
                            <children>
                               <Button fx:id="previous" mnemonicParsing="false" onAction="#handleButtonActionRefresh" text="&lt;" />
                               <Button fx:id="now" mnemonicParsing="false" onAction="#handleButtonActionRefresh" text="Aujourd'hui" />
@@ -77,14 +84,10 @@
    <bottom>
       <VBox prefHeight="858.0" prefWidth="1602.0" BorderPane.alignment="CENTER">
          <children>
-            <GridPane fx:id="calendarWeek" alignment="BASELINE_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="30000.0" prefWidth="40000.0" styleClass="grid-pane-border">
+            <GridPane fx:id="calendarDay" alignment="BASELINE_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="6.0" prefWidth="1602.0" styleClass="grid-pane-border">
               <columnConstraints>
-                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="5.0" prefWidth="5.0" />
-                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="748.0" minWidth="5.0" prefWidth="171.0" />
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="1431.0" minWidth="10.0" prefWidth="1431.0" />
               </columnConstraints>
               <rowConstraints>
                   <RowConstraints minHeight="10.0" prefHeight="60.0" valignment="CENTER" vgrow="SOMETIMES" />
@@ -127,11 +130,88 @@
                   <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="18.0" prefWidth="95.0" text="17:00" GridPane.rowIndex="19" />
                   <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="18.0" prefWidth="95.0" text="18:00" GridPane.rowIndex="21" />
                   <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="18.0" prefWidth="95.0" text="19:00" GridPane.rowIndex="23" />
+                  <Label fx:id="labelDay" alignment="CENTER" contentDisplay="CENTER" prefHeight="18.0" prefWidth="95.0" text="lundi" GridPane.columnIndex="1" />
+               </children>
+            </GridPane>
+            <GridPane fx:id="calendarWeek" alignment="BASELINE_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="0.0" prefWidth="1602.0" styleClass="grid-pane-border">
+               <columnConstraints>
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="5.0" prefWidth="5.0" />
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints minHeight="10.0" prefHeight="60.0" valignment="CENTER" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="24.199987792968727" minHeight="10.0" prefHeight="24.199987792968727" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="30.600012207031227" minHeight="10.0" prefHeight="30.600012207031227" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+               </rowConstraints>
+               <children>
+                  <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="18.0" prefWidth="95.0" text="08:00" GridPane.rowIndex="1" />
+                  <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="18.0" prefWidth="95.0" text="09:00" GridPane.rowIndex="3" />
+                  <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="18.0" prefWidth="95.0" text="10:00" GridPane.rowIndex="5" />
+                  <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="18.0" prefWidth="95.0" text="11:00" GridPane.rowIndex="7" />
+                  <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="18.0" prefWidth="95.0" text="12:00" GridPane.rowIndex="9" />
+                  <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="18.0" prefWidth="95.0" text="13:00" GridPane.rowIndex="11" />
+                  <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="18.0" prefWidth="95.0" text="14:00" GridPane.rowIndex="13" />
+                  <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="18.0" prefWidth="95.0" text="15:00" GridPane.rowIndex="15" />
+                  <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="18.0" prefWidth="95.0" text="16:00" GridPane.rowIndex="17" />
+                  <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="18.0" prefWidth="95.0" text="17:00" GridPane.rowIndex="19" />
+                  <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="18.0" prefWidth="95.0" text="18:00" GridPane.rowIndex="21" />
+                  <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="18.0" prefWidth="95.0" text="19:00" GridPane.rowIndex="23" />
                   <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="18.0" prefWidth="95.0" text="lundi" GridPane.columnIndex="1" />
                   <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="18.0" prefWidth="95.0" text="Mardi" GridPane.columnIndex="2" />
                   <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="18.0" prefWidth="95.0" text="Mercredi" GridPane.columnIndex="3" />
                   <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="18.0" prefWidth="95.0" text="Jeudi" GridPane.columnIndex="4" />
                   <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="18.0" prefWidth="95.0" text="Vendredi" GridPane.columnIndex="5" />
+               </children>
+            </GridPane>
+            <GridPane fx:id="calendarMonth" alignment="BASELINE_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="490.0" prefWidth="1602.0" styleClass="grid-pane-border">
+               <columnConstraints>
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="748.0" minWidth="10.0" prefWidth="171.0" />
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="748.0" minWidth="10.0" prefWidth="171.0" />
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="748.0" minWidth="10.0" prefWidth="171.0" />
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="748.0" minWidth="10.0" prefWidth="171.0" />
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="748.0" minWidth="5.0" prefWidth="171.0" />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints minHeight="10.0" prefHeight="60.0" valignment="CENTER" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+               </rowConstraints>
+               <children>
+                  <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="18.0" prefWidth="95.0" text="lundi" />
+                  <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="18.0" prefWidth="95.0" text="Mardi" GridPane.columnIndex="1" />
+                  <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="18.0" prefWidth="95.0" text="Mercredi" GridPane.columnIndex="2" />
+                  <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="18.0" prefWidth="95.0" text="Jeudi" GridPane.columnIndex="3" />
+                  <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="18.0" prefWidth="95.0" text="Vendredi" GridPane.columnIndex="4" />
                </children>
             </GridPane>
          </children>
