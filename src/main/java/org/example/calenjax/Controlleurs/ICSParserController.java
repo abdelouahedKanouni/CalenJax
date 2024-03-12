@@ -30,7 +30,7 @@ public class ICSParserController {
         try {
             System.out.println(HelloApplication.class.getResource("test.ics"));
 
-            FileInputStream fin = new FileInputStream("C:/Users/romai/Documents/M1/semestre2/serveur_app/CalenJax/src/main/resources/org/example/calenjax/test.ics");
+            FileInputStream fin = new FileInputStream(filePath);
             CalendarBuilder builder = new CalendarBuilder();
             Calendar calendar = builder.build(fin);
 
