@@ -35,6 +35,7 @@ public class HomePageController {
     private GridPane calendarMonth;
     private LocalDateTime actualDate;
     private String mode = "week";
+    private String filePath = "C:/Users/romai/Documents/M1/semestre2/serveur_app/CalenJax/src/main/resources/org/example/calenjax/test.ics";
     @FXML
     private Label labelDay;
     @FXML
@@ -168,15 +169,15 @@ public class HomePageController {
             switch (when) {
                 case "previous" -> {
                     this.actualDate = this.actualDate.minusWeeks(1).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
-                    events = parser.parse("", this.mode, this.actualDate);
+                    events = parser.parse(this.filePath, this.mode, this.actualDate);
                 }
                 case "now" -> {
                     this.actualDate = LocalDateTime.now();
-                    events = parser.parse("", this.mode, this.actualDate);
+                    events = parser.parse(this.filePath, this.mode, this.actualDate);
                 }
                 case "after" -> {
                     this.actualDate = this.actualDate.plusWeeks(1).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));;
-                    events = parser.parse("", this.mode, this.actualDate);
+                    events = parser.parse(this.filePath, this.mode, this.actualDate);
                 }
             }
             for ( Event e : events) {
@@ -198,24 +199,24 @@ public class HomePageController {
                 case "previous" -> {
                     this.actualDate = this.actualDate.minusDays(1);
                     labelDay.setText(this.actualDate.format(DateTimeFormatter.ofPattern("EEEE", Locale.FRENCH)) + " " + this.actualDate.format(DateTimeFormatter.ofPattern("d", Locale.FRENCH)));
-                    events = parser.parse("", this.mode, this.actualDate);
+                    events = parser.parse(this.filePath, this.mode, this.actualDate);
                 }
                 case "now" -> {
                     this.actualDate =  LocalDateTime.now();
                     labelDay.setText(this.actualDate.format(DateTimeFormatter.ofPattern("EEEE", Locale.FRENCH)) + " " + this.actualDate.format(DateTimeFormatter.ofPattern("d", Locale.FRENCH)));
-                    events = parser.parse("", this.mode, this.actualDate);
+                    events = parser.parse(this.filePath, this.mode, this.actualDate);
                 }
                 case "here" -> {
                     DayOfWeek desiredDayOfWeek = convertFrenchDayOfWeek(date);
                     LocalDate dateTmp = LocalDate.from(this.actualDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)));
                     this.actualDate = dateTmp.with(TemporalAdjusters.nextOrSame(desiredDayOfWeek)).atStartOfDay();
                     labelDay.setText(this.actualDate.format(DateTimeFormatter.ofPattern("EEEE", Locale.FRENCH)) + " " + this.actualDate.format(DateTimeFormatter.ofPattern("d", Locale.FRENCH)));
-                    events = parser.parse("", this.mode, this.actualDate);
+                    events = parser.parse(this.filePath, this.mode, this.actualDate);
                 }
                 case "after" -> {
                     this.actualDate = this.actualDate.plusDays(1);
                     labelDay.setText(this.actualDate.format(DateTimeFormatter.ofPattern("EEEE", Locale.FRENCH)) + " " + this.actualDate.format(DateTimeFormatter.ofPattern("d", Locale.FRENCH)));
-                    events = parser.parse("", this.mode, this.actualDate);
+                    events = parser.parse(this.filePath, this.mode, this.actualDate);
                 }
             }
             for ( Event e : events) {
@@ -226,15 +227,15 @@ public class HomePageController {
             switch (when) {
                 case "previous" -> {
                     this.actualDate = this.actualDate.minusMonths(1).withDayOfMonth(1);
-                    events = parser.parse("", this.mode, this.actualDate);
+                    events = parser.parse(this.filePath, this.mode, this.actualDate);
                 }
                 case "now" -> {
                     this.actualDate = LocalDateTime.now().withDayOfMonth(1);
-                    events = parser.parse("", this.mode, this.actualDate);
+                    events = parser.parse(this.filePath, this.mode, this.actualDate);
                 }
                 case "after" -> {
                     this.actualDate = this.actualDate.plusMonths(1).withDayOfMonth(1);
-                    events = parser.parse("", this.mode, this.actualDate);
+                    events = parser.parse(this.filePath, this.mode, this.actualDate);
                 }
             }
             for ( Event e : events) {

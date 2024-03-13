@@ -26,11 +26,17 @@ import java.time.format.DateTimeFormatter;
 
 public class ICSParserController {
 
+    private String lastFilePath;
+
     public List<Event> parse(String filePath, String mode, LocalDateTime date)  {
         try {
-            //System.out.println(HelloApplication.class.getResource("test.ics"));
+            if (filePath.isEmpty()){
+                filePath = this.lastFilePath;
+            } else{
+                this.lastFilePath = filePath;
+            }
 
-            FileInputStream fin = new FileInputStream("C:/Users/romai/Documents/M1/semestre2/serveur_app/CalenJax/src/main/resources/org/example/calenjax/test.ics");
+            FileInputStream fin = new FileInputStream(filePath);
             CalendarBuilder builder = new CalendarBuilder();
             Calendar calendar = builder.build(fin);
 
