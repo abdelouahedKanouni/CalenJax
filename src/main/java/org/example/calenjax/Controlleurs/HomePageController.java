@@ -91,20 +91,6 @@ public class HomePageController {
         formationsListView.getItems().addAll(formationsDisponibles);
     }
 
-    private void loadSalles() {
-        // Effacer toutes les salles disponibles pour éviter les doublons
-        sallesDisponibles.clear();
-
-        // Charger les noms des salles disponibles depuis votre source de données (par exemple, le répertoire des salles)
-        File repertoireSalles = new File("C:/Users/AbdelouahedKANOUNI/IdeaProjects/CalenJax/src/main/resources/org/example/calenjax/Salles/");
-        if (repertoireSalles.isDirectory()) {
-            for (File fichierSalle : repertoireSalles.listFiles()) {
-                if (fichierSalle.isFile()) {
-                    sallesDisponibles.add(fichierSalle.getName());
-                }
-            }
-        }
-    }
 
     @FXML
     private void handleButtonActionChercher(ActionEvent event) {
