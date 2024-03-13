@@ -22,7 +22,7 @@
          <children>
              <VBox prefHeight="176.0" prefWidth="1463.0">
                  <children>
-                     <HBox alignment="CENTER" prefHeight="50.0" prefWidth="1463.0" spacing="30.0" style="-fx-background-color: D3D3D3;" styleClass="root" stylesheets="@styles/dark.css">
+                     <HBox alignment="CENTER" prefHeight="50.0" prefWidth="1463.0" spacing="30.0" style="-fx-background-color: D3D3D3;" styleClass="root">
                          <children>
                              <Button mnemonicParsing="false" text="Light/Dark Mode" />
                              <Button fx:id="formationButton" onAction="#handleFormationButtonClick" contentDisplay="CENTER" mnemonicParsing="false" prefHeight="29.0" prefWidth="120.0" text="Formation" />
@@ -82,9 +82,9 @@
                            <children>
                               <MenuButton mnemonicParsing="false" prefHeight="26.0" prefWidth="122.0" text="MenuButton">
                                 <items>
-                                  <MenuItem mnemonicParsing="false" text="Jour" />
-                                  <MenuItem mnemonicParsing="false" text="Semaine" />
-                                    <MenuItem mnemonicParsing="false" text="Mois" />
+                                  <MenuItem fx:id="buttonDay" mnemonicParsing="false" onAction="#handleButtonActionCalendar" text="Jour" />
+                                  <MenuItem fx:id="buttonWeek" mnemonicParsing="false" onAction="#handleButtonActionCalendar" text="Semaine" />
+                                    <MenuItem fx:id="buttonMonth" mnemonicParsing="false" onAction="#handleButtonActionCalendar" text="Mois" />
                                 </items>
                               </MenuButton>
                            </children>
