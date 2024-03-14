@@ -18,7 +18,7 @@
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="300.0" minWidth="400.0" prefHeight="903.0" prefWidth="1602.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.calenjax.Controlleurs.HomePageController">
    <top>
-      <VBox prefHeight="249.0" prefWidth="1463.0" BorderPane.alignment="CENTER">
+      <VBox prefHeight="315.0" prefWidth="1602.0" BorderPane.alignment="CENTER">
          <children>
             <ImageView fx:id="homeImage" fitHeight="130.0" fitWidth="1479.0">
                <image>
@@ -35,23 +35,27 @@
                              <Button mnemonicParsing="false" prefHeight="29.0" prefWidth="120.0" text="Personnel" />
                          </children>
                      </HBox>
-                  <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
+                  <VBox fx:id="searchBar" prefHeight="200.0" prefWidth="100.0">
                      <children>
-                        <TextField fx:id="rechercheTextField" prefHeight="26.0" prefWidth="316.0" />
-                        <Button fx:id="chercherButton" mnemonicParsing="false" onAction="#handleButtonActionChercher" prefHeight="29.0" prefWidth="120.0" text="Chercher">
-                           <padding>
-                              <Insets left="5.0" right="6.0" />
-                           </padding>
-                           <HBox.margin>
-                              <Insets left="20.0" right="5.0" />
-                           </HBox.margin>
-                        </Button>
+                        <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
+                           <children>
+                              <TextField fx:id="rechercheTextField" prefHeight="26.0" prefWidth="316.0" />
+                              <Button fx:id="chercherButton" mnemonicParsing="false" onAction="#handleButtonActionChercher" prefHeight="29.0" prefWidth="120.0" text="Chercher">
+                                 <padding>
+                                    <Insets left="5.0" right="6.0" />
+                                 </padding>
+                                 <HBox.margin>
+                                    <Insets left="20.0" right="5.0" />
+                                 </HBox.margin>
+                              </Button>
+                           </children>
+                        </HBox>
+                           <ListView fx:id="formationsListView" prefHeight="573.0" prefWidth="1602.0" />
                      </children>
-                  </HBox>
-                     <ListView fx:id="formationsListView" prefHeight="200.0" prefWidth="400.0" />
+                  </VBox>
                  </children>
              </VBox>
-            <VBox prefHeight="924.0" prefWidth="1602.0">
+            <VBox fx:id="parameterBar" prefHeight="924.0" prefWidth="1602.0">
                <children>
                   <HBox prefHeight="118.0" prefWidth="1602.0">
                      <children>
@@ -92,7 +96,7 @@
    <bottom>
       <VBox prefHeight="858.0" prefWidth="1602.0" BorderPane.alignment="CENTER">
          <children>
-            <GridPane fx:id="calendarDay" alignment="BASELINE_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="6.0" prefWidth="1602.0" styleClass="grid-pane-border">
+            <GridPane fx:id="calendarDay" alignment="BASELINE_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="199.0" prefWidth="1602.0" styleClass="grid-pane-border">
               <columnConstraints>
                   <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="748.0" minWidth="5.0" prefWidth="171.0" />
                   <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="1431.0" minWidth="10.0" prefWidth="1431.0" />

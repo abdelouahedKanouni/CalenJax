@@ -45,6 +45,10 @@ public class HomePageController {
     private Label labelDay;
     @FXML
     private ImageView homeImage;
+    @FXML
+    private VBox parameterBar;
+    @FXML
+    private VBox searchBar;
     private Stage primaryStage;
 
     private List<Button> eventButtons = new ArrayList<>();
@@ -64,6 +68,8 @@ public class HomePageController {
         calendarMonth.setVisible(false);
         calendarMonth.setManaged(false);
 
+        searchBar.setManaged(false);
+        searchBar.setVisible(false);
 
         // Calendrier par semaine
         // Création des boutons de fond pour chaque cellule du calendrier
@@ -118,8 +124,6 @@ public class HomePageController {
         });
     }
 
-
-
     @FXML
     private void handleButtonActionChercher(ActionEvent event) {
         String selectedItem = formationsListView.getSelectionModel().getSelectedItem();
@@ -142,26 +146,20 @@ public class HomePageController {
 
             this.mode="week";
             // Parser le fichier correspondant à la formation ou la salle sélectionnée
+            this.filePath = filePath;
             ICSParserController parser = new ICSParserController();
-            List<Event> events = parser.parse(filePath, this.mode, this.actualDate);
-
-            // Vérifier si la liste des événements est nulle avant de l'itérer
-            if (events != null) {
-                // Mettre à jour l'affichage de l'emploi du temps avec les informations récupérées
-                calendarWeek.getChildren().removeAll(eventButtons);
-                eventButtons.clear();
-
-                for (Event e : events) {
-                    addEventButtonWeekCalendar(e);
-                }
-            } else {
-                System.err.println("La liste des événements est nulle. Vérifiez le fichier ICS spécifié.");
-            }
+            refreshDataCalendar("now", null);
         }
     }
 
     @FXML
     private void handleFormationButtonClick(ActionEvent event) {
+
+        parameterBar.setManaged(false);
+        parameterBar.setVisible(false);
+        searchBar.setManaged(true);
+        searchBar.setVisible(true);
+
         // Effacer toutes les salles actuellement affichées dans la ListView
         formationsListView.getItems().clear();
         // Effacer toutes les formations disponibles pour éviter les doublons
@@ -195,6 +193,12 @@ public class HomePageController {
 
     @FXML
     private void handleSalleButtonClick(ActionEvent event) {
+
+        parameterBar.setManaged(false);
+        parameterBar.setVisible(false);
+        searchBar.setManaged(true);
+        searchBar.setVisible(true);
+
         // Effacer toutes les formations actuellement affichées dans la ListView
         formationsListView.getItems().clear();
         // Effacer toutes les salles disponibles pour éviter les doublons
@@ -204,6 +208,7 @@ public class HomePageController {
         if (repertoireSalles.isDirectory()) {
             for (File fichierSalle : repertoireSalles.listFiles()) {
                 if (fichierSalle.isFile()) {
+                    System.out.println(fichierSalle.getName());
                     sallesDisponibles.add(fichierSalle.getName());
                 }
             }
@@ -261,6 +266,11 @@ public class HomePageController {
         calendarWeek.getChildren().removeAll(eventButtons);
         calendarDay.getChildren().removeAll(eventButtons);
         eventButtons.clear();
+
+        parameterBar.setManaged(true);
+        parameterBar.setVisible(true);
+        searchBar.setManaged(false);
+        searchBar.setVisible(false);
 
         ICSParserController parser = new ICSParserController();
         List<Event> events = new ArrayList<>();
