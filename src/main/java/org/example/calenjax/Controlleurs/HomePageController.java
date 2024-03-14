@@ -4,6 +4,8 @@ import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.ListView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tooltip;
@@ -16,6 +18,7 @@ import javafx.util.Duration;
 import org.example.calenjax.Event;
 import javafx.event.ActionEvent;
 
+import java.io.File;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -33,9 +36,11 @@ public class HomePageController {
     private GridPane calendarDay;
     @FXML
     private GridPane calendarMonth;
+    @FXML
+    private TextField rechercheTextField;
     private LocalDateTime actualDate;
     private String mode = "week";
-    private String filePath = "C:/Users/romai/Documents/M1/semestre2/serveur_app/CalenJax/src/main/resources/org/example/calenjax/test.ics";
+    private String filePath = "./src/main/resources/org/example/calenjax/personnal/test.ics";
     @FXML
     private Label labelDay;
     @FXML
@@ -43,6 +48,10 @@ public class HomePageController {
     private Stage primaryStage;
 
     private List<Button> eventButtons = new ArrayList<>();
+    private List<String> formationsDisponibles = new ArrayList<>();
+    private List<String> sallesDisponibles = new ArrayList<>();
+    @FXML
+    private ListView<String> formationsListView;
 
     public void setPrimaryStage(Stage primaryStage) {
         this.primaryStage = primaryStage;
@@ -57,6 +66,7 @@ public class HomePageController {
 
 
         // Calendrier par semaine
+        // Création des boutons de fond pour chaque cellule du calendrier
         int numRows = calendarWeek.getRowConstraints().size();
         int numCols = calendarWeek.getColumnConstraints().size();
 
@@ -95,10 +105,80 @@ public class HomePageController {
             }
         }
 
+        // Initialisation de la date actuelle
         this.actualDate = LocalDateTime.now();
 
-
         refreshDataCalendar("now", null);
+
+        // Ajout d'un écouteur pour mettre à jour le TextField lors de la sélection d'une formation
+        formationsListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                rechercheTextField.setText(newValue);
+            }
+        });
+    }
+
+
+
+    @FXML
+    private void handleButtonActionChercher(ActionEvent event) {
+        String selectedItem = formationsListView.getSelectionModel().getSelectedItem();
+        System.out.print("selected item: ");
+        System.out.println(selectedItem);
+
+        if (selectedItem != null) {
+            String filePath;
+            if (formationsDisponibles.contains(selectedItem)) {
+                // Si l'élément sélectionné est une formation
+                filePath = "./src/main/resources/org/example/calenjax/Formations/" + selectedItem;
+            } else if (sallesDisponibles.contains(selectedItem)) {
+                // Si l'élément sélectionné est une salle
+                filePath = "./src/main/resources/org/example/calenjax/Salles/" + selectedItem;
+            } else {
+                // Si l'élément sélectionné n'est ni une formation ni une salle, vous pouvez gérer cela selon vos besoins
+                System.err.println("Élément sélectionné non valide.");
+                return;
+            }
+
+            this.mode="week";
+            // Parser le fichier correspondant à la formation ou la salle sélectionnée
+            ICSParserController parser = new ICSParserController();
+            List<Event> events = parser.parse(filePath, this.mode, this.actualDate);
+
+            // Vérifier si la liste des événements est nulle avant de l'itérer
+            if (events != null) {
+                // Mettre à jour l'affichage de l'emploi du temps avec les informations récupérées
+                calendarWeek.getChildren().removeAll(eventButtons);
+                eventButtons.clear();
+
+                for (Event e : events) {
+                    addEventButtonWeekCalendar(e);
+                }
+            } else {
+                System.err.println("La liste des événements est nulle. Vérifiez le fichier ICS spécifié.");
+            }
+        }
+    }
+
+    @FXML
+    private void handleFormationButtonClick(ActionEvent event) {
+        // Effacer toutes les salles actuellement affichées dans la ListView
+        formationsListView.getItems().clear();
+        // Effacer toutes les formations disponibles pour éviter les doublons
+        formationsDisponibles.clear();
+
+        // Charger les noms des formations disponibles depuis votre source de données (par exemple, le répertoire des formations)
+        File repertoireFormations = new File("./src/main/resources/org/example/calenjax/Formations/");
+        if (repertoireFormations.isDirectory()) {
+            for (File fichierFormation : repertoireFormations.listFiles()) {
+                if (fichierFormation.isFile()) {
+                    formationsDisponibles.add(fichierFormation.getName());
+                }
+            }
+        }
+
+        // Mettre à jour la ListView des formations avec les formations disponibles
+        formationsListView.getItems().addAll(formationsDisponibles);
     }
 
     private void handleBackgroundButtonClick(int col) {
@@ -111,6 +191,26 @@ public class HomePageController {
         this.mode = "day";
 
         refreshDataCalendar("here", getDay(col));
+    }
+
+    @FXML
+    private void handleSalleButtonClick(ActionEvent event) {
+        // Effacer toutes les formations actuellement affichées dans la ListView
+        formationsListView.getItems().clear();
+        // Effacer toutes les salles disponibles pour éviter les doublons
+        sallesDisponibles.clear();
+        // Charger les noms des salles disponibles depuis votre source de données (par exemple, le répertoire des salles)
+        File repertoireSalles = new File("./src/main/resources/org/example/calenjax/Salles/");
+        if (repertoireSalles.isDirectory()) {
+            for (File fichierSalle : repertoireSalles.listFiles()) {
+                if (fichierSalle.isFile()) {
+                    sallesDisponibles.add(fichierSalle.getName());
+                }
+            }
+        }
+
+        // Mettre à jour la ListView des salles avec les salles disponibles
+        formationsListView.getItems().addAll(sallesDisponibles);
     }
 
     @FXML
@@ -349,6 +449,7 @@ public class HomePageController {
         }
         else {
             eventButton.getStyleClass().add("event-button");
+
         }
         GridPane.setRowIndex(eventButton, e.getStartRow());
         GridPane.setColumnIndex(eventButton, e.getStartCol());
@@ -381,6 +482,7 @@ public class HomePageController {
 
         eventButtons.add(eventButton);
     }
+
     private String getDay(int num){
         switch (num){
             case 1 -> {

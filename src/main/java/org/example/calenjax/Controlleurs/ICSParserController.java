@@ -67,18 +67,16 @@ public class ICSParserController {
         if (mode.equals("month")){
             startOfDateTime = LocalDateTime.of(LocalDate.from(date), LocalTime.MIN);
             endOfDateTime = date.with(TemporalAdjusters.lastDayOfMonth()).with(LocalTime.MAX);
-            System.out.println(startOfDateTime);
-            System.out.println(endOfDateTime);
-            System.out.println("--------------");
+//            System.out.println(startOfDateTime);
+//            System.out.println(endOfDateTime);
+//            System.out.println("--------------");
         }
         else if (mode.equals("week")){
             LocalDate startOfWeek = date.toLocalDate().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
             LocalDate endOfWeek = date.toLocalDate().with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
             startOfDateTime = LocalDateTime.of(startOfWeek, LocalTime.MIN);
             endOfDateTime = LocalDateTime.of(endOfWeek, LocalTime.MAX);
-            System.out.println(startOfDateTime);
-            System.out.println(endOfDateTime);
-            System.out.println("--------------");
+
         }
         else if (mode.equals("day")){
             startOfDateTime = LocalDateTime.of(LocalDate.from(date), LocalTime.MIN);
@@ -117,9 +115,9 @@ public class ICSParserController {
         LocalDateTime dateTimeStart = parseWithDefaultTime(dtstart, formatter);
         LocalDateTime dateTimeEnd = parseWithDefaultTime(dtend, formatter);
 
-        System.out.println("Start Date: " + dateTimeStart);
-        System.out.println("End Date: " + dateTimeEnd);
-        System.out.println("******** ");
+//        System.out.println("Start Date: " + dateTimeStart);
+//        System.out.println("End Date: " + dateTimeEnd);
+//        System.out.println("******** ");
 
         int hourStart = dateTimeStart.getHour() + 1;
         int minuteStart = dateTimeStart.getMinute();
@@ -150,10 +148,6 @@ public class ICSParserController {
                 default -> 1;
             };
             int startRow = (dateTimeStart.getDayOfMonth() + startColFirstDayOfMonth) / 7;
-            System.out.println(startRow);
-            System.out.println(dayName);
-
-
             return new Event(uid, summary, description, location, startRow + 1, startCol, 1);
         }else{
             int startRow = (hourStart - 8) * 2;
@@ -172,7 +166,6 @@ public class ICSParserController {
                 startRow = 0;
                 rowSpan = 25;
             }
-            //System.out.println("deb " + (startRow + 1) + " " + (rowSpan + 1));
             if (startRow<1){startRow=1;}
             if (startCol == 0){return null;}
             return new Event(uid, summary, description, location, startRow + 1, startCol, rowSpan);
