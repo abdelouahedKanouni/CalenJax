@@ -36,12 +36,44 @@
 }
 
 .event-month-button {
-    -fx-background-color: #D1E8FF;
-    -fx-background-radius: 5em;
-    -fx-min-width: 30px;
-    -fx-min-height: 30px;
-    -fx-max-width: 30px;
-    -fx-max-height: 30px;
+    -fx-background-color: #6075B6;
+    -fx-background-radius: 3em;
+    -fx-min-width: 15px;
+    -fx-min-height: 15px;
+    -fx-max-width: 15px;
+    -fx-max-height: 15px;
+}
+
+.background-month-button-2 {
+    -fx-background-color: #EDEDED;
+    -fx-border-color: white;
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
+    -fx-border-width: 0.3;
+}
+
+.background-month-button-2:hover {
+    -fx-background-color: lightgray;
+    -fx-border-color: white;
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
+    -fx-border-width: 0.3;
+}
+
+ .background-month-button-today {
+     -fx-background-color: #E8FDE7;
+     -fx-border-color: white;
+     -fx-border-radius: 0;
+     -fx-background-radius: 0;
+     -fx-border-width: 0.3;
+ }
+
+.background-month-button-today:hover {
+    -fx-background-color: lightgray;
+    -fx-border-color: white;
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
+    -fx-border-width: 0.3;
 }
 
 .event-month-button:hover {

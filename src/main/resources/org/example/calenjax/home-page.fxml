@@ -94,8 +94,9 @@
       </VBox>
    </top>
    <bottom>
-      <VBox prefHeight="858.0" prefWidth="1602.0" BorderPane.alignment="CENTER">
+      <VBox alignment="CENTER" prefHeight="858.0" prefWidth="1602.0" BorderPane.alignment="CENTER">
          <children>
+            <Label fx:id="monthName" alignment="CENTER" contentDisplay="CENTER" prefHeight="29.0" prefWidth="68.0" />
             <GridPane fx:id="calendarDay" alignment="BASELINE_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="199.0" prefWidth="1602.0" styleClass="grid-pane-border">
               <columnConstraints>
                   <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="748.0" minWidth="5.0" prefWidth="171.0" />

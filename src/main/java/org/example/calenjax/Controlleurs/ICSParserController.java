@@ -134,7 +134,7 @@ public class ICSParserController {
                 case "mercredi" -> 2;
                 case "jeudi" -> 3;
                 case "vendredi" -> 4;
-                default -> 0;
+                default -> 5;
             };
             LocalDate startOfDateTime = LocalDate.from(dateTimeStart.with(TemporalAdjusters.firstDayOfMonth()));
             String dayNameOfBeginMonth = startOfDateTime.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.getDefault());
@@ -145,7 +145,7 @@ public class ICSParserController {
                 case "mercredi" -> 3;
                 case "jeudi" -> 4;
                 case "vendredi" -> 5;
-                default -> 1;
+                default -> 6;
             };
             int startRow = (dateTimeStart.getDayOfMonth() + startColFirstDayOfMonth) / 7;
             return new Event(uid, summary, description, location, startRow + 1, startCol, 1);
