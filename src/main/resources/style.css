@@ -10,8 +10,20 @@
     -fx-border-width: 0.3;
 }
 
+.background-header-button {
+    -fx-background-color: #EDEDED;
+    -fx-border-color: lightgray;
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
+    -fx-border-width: 0.3;
+}
+
 .background-button:hover {
     -fx-background-color: #EDEDED;
+}
+
+.background-header-button:hover {
+    -fx-background-color: gray;
 }
 
 .event-button {
@@ -21,6 +33,51 @@
     -fx-border-width: 1 1 1 1;
     -fx-content-display: top;
     -fx-alignment: top-left;
+}
+
+.event-month-button {
+    -fx-background-color: #6075B6;
+    -fx-background-radius: 3em;
+    -fx-min-width: 15px;
+    -fx-min-height: 15px;
+    -fx-max-width: 15px;
+    -fx-max-height: 15px;
+}
+
+.background-month-button-2 {
+    -fx-background-color: #EDEDED;
+    -fx-border-color: white;
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
+    -fx-border-width: 0.3;
+}
+
+.background-month-button-2:hover {
+    -fx-background-color: lightgray;
+    -fx-border-color: white;
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
+    -fx-border-width: 0.3;
+}
+
+ .background-month-button-today {
+     -fx-background-color: #E8FDE7;
+     -fx-border-color: white;
+     -fx-border-radius: 0;
+     -fx-background-radius: 0;
+     -fx-border-width: 0.3;
+ }
+
+.background-month-button-today:hover {
+    -fx-background-color: lightgray;
+    -fx-border-color: white;
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
+    -fx-border-width: 0.3;
+}
+
+.event-month-button:hover {
+    -fx-background-color: #1E90FF;
 }
 
 .event-button:hover {
