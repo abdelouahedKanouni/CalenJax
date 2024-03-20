@@ -6,6 +6,7 @@
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -22,6 +23,10 @@
                   <Image url="@images/connexion.png" />
                </image>
             </ImageView>
+            <Text fx:id="errorMessage" fill="red" layoutX="10.0" layoutY="400.0">
+               <font>
+                  <Font name="System Bold" size="15.0" />
+               </font></Text>
          </children>
       </AnchorPane>
    </left>
@@ -32,7 +37,7 @@
             <PasswordField fx:id="motDePasseField" layoutX="105.0" layoutY="227.0" promptText="Mot de passe" style="-fx-background-color: transparent; -fx-border-color: #6476b6; -fx-border-width: 0px 0px 2px 0px;" />
             <FontAwesomeIconView fill="#6476b6" glyphName="USER" layoutX="77.0" layoutY="178.0" size="20" text="" />
             <FontAwesomeIconView fill="#6476b6" glyphName="LOCK" layoutX="78.0" layoutY="247.0" size="20" />
-            <Button layoutX="115.0" layoutY="367.0" mnemonicParsing="false" onAction="#connexion" prefHeight="29.0" prefWidth="118.0" style="-fx-background-color: #6476b6;" text="SE CONNECTER" />
+            <Button fx:id="connecterButton" layoutX="115.0" layoutY="367.0" mnemonicParsing="false" onAction="#connexion" prefHeight="29.0" prefWidth="118.0" style="-fx-background-color: #6476b6;" text="SE CONNECTER" />
             <Hyperlink layoutX="105.0" layoutY="438.0" text="Mot de passe oublié ?" />
             <FontAwesomeIconView fill="#6476b6" glyphName="USERS" layoutX="155.0" layoutY="65.0" size="35" />
             <Text fill="#6476b6" layoutX="122.0" layoutY="111.0" strokeType="OUTSIDE" strokeWidth="0.0" text="User Login">
@@ -40,12 +45,15 @@
                   <Font size="22.0" />
                </font>
             </Text>
-            <RadioButton fx:id="etudiantButton" onAction="#type" layoutX="48.0" layoutY="301.0" mnemonicParsing="false" style="-fx-background-insets: 5px;" text="Etudiant" textFill="#6476b6">
+            <RadioButton fx:id="etudiantButton" layoutX="48.0" layoutY="301.0" mnemonicParsing="false" style="-fx-background-insets: 5px;" text="Étudiant" textFill="#6476b6" onAction="#typeEtudiant">
                <font>
                   <Font name="System Bold" size="12.0" />
                </font>
+               <toggleGroup>
+                  <ToggleGroup fx:id="user" />
+               </toggleGroup>
             </RadioButton>
-            <RadioButton fx:id="enseignantButton" onAction="#type" layoutX="192.0" layoutY="301.0" mnemonicParsing="false" text="Enseignant" textFill="#6476b6">
+            <RadioButton fx:id="enseignantButton" layoutX="192.0" layoutY="301.0" mnemonicParsing="false" text="Enseignant" textFill="#6476b6" toggleGroup="$user" onAction="#typeEnseignant">
                <font>
                   <Font name="System Bold" size="12.0" />
                </font>

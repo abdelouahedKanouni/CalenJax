@@ -30,9 +30,10 @@ public class ICSParserController {
 
     public List<Event> parse(String filePath, String mode, LocalDateTime date)  {
         try {
-            if (filePath.isEmpty()){
-                filePath = this.lastFilePath;
-            } else{
+            if (filePath == null || filePath.isEmpty() || filePath.equals(lastFilePath)) {
+                // Fichier par défaut ou même fichier déjà utilisé, retourne une liste vide
+                return Collections.emptyList();
+            } else {
                 this.lastFilePath = filePath;
             }
 
@@ -45,7 +46,6 @@ public class ICSParserController {
             List eventsToday = (List) filter.filter(calendar.getComponents(Component.VEVENT));
             List events = new ArrayList<>();
             for (Object c : eventsToday){
-                //System.out.println(c);
                 Event e = convertToEvent((Component) c, mode);
                 if (e != null){
                     events.add(e);

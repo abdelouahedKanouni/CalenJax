@@ -16,22 +16,24 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.example.calenjax.Event;
 import javafx.event.ActionEvent;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.time.temporal.TemporalAdjusters;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 public class HomePageController {
     public Button now;
@@ -45,7 +47,9 @@ public class HomePageController {
     private TextField rechercheTextField;
     private LocalDateTime actualDate;
     private String mode = "week";
-    private String filePath = "./src/main/resources/org/example/calenjax/personnal/test.ics";
+
+    private String filePath = null;
+
     @FXML
     private Label labelDay;
     @FXML
@@ -62,6 +66,8 @@ public class HomePageController {
     private List<String> sallesDisponibles = new ArrayList<>();
     @FXML
     private ListView<String> formationsListView;
+    private static String currentUser;
+    private Map<String, String> userFilesMap;
 
     public void setPrimaryStage(Stage primaryStage) {
         this.primaryStage = primaryStage;
@@ -69,6 +75,7 @@ public class HomePageController {
     }
     public void initialize() {
 
+        userFilesMap = new HashMap<>();
         calendarDay.setVisible(false);
         calendarDay.setManaged(false);
         calendarMonth.setVisible(false);
@@ -130,17 +137,17 @@ public class HomePageController {
     @FXML
     private void handleButtonActionChercher(ActionEvent event) {
         String selectedItem = formationsListView.getSelectionModel().getSelectedItem();
-        System.out.print("selected item: ");
-        System.out.println(selectedItem);
 
         if (selectedItem != null) {
             String filePath;
             if (formationsDisponibles.contains(selectedItem)) {
                 // Si l'élément sélectionné est une formation
-                filePath = "./src/main/resources/org/example/calenjax/Formations/" + selectedItem;
+                String fileName = selectedItem.replace(" ", "_") + ".ics";
+                filePath = "./src/main/resources/org/example/calenjax/Formations/" + fileName;
             } else if (sallesDisponibles.contains(selectedItem)) {
                 // Si l'élément sélectionné est une salle
-                filePath = "./src/main/resources/org/example/calenjax/Salles/" + selectedItem;
+                String fileName = selectedItem.replace(" ", "_") + ".ics";
+                filePath = "./src/main/resources/org/example/calenjax/Salles/" + fileName;
             } else {
                 // Si l'élément sélectionné n'est ni une formation ni une salle, vous pouvez gérer cela selon vos besoins
                 System.err.println("Élément sélectionné non valide.");
@@ -173,7 +180,10 @@ public class HomePageController {
         if (repertoireFormations.isDirectory()) {
             for (File fichierFormation : repertoireFormations.listFiles()) {
                 if (fichierFormation.isFile()) {
-                    formationsDisponibles.add(fichierFormation.getName());
+                    String formationName = fichierFormation.getName();
+                    formationName = formationName.replace(".ics", "");
+                    formationName = formationName.replace("_", " ");
+                    formationsDisponibles.add(formationName);
                 }
             }
         }
@@ -181,7 +191,66 @@ public class HomePageController {
         // Mettre à jour la ListView des formations avec les formations disponibles
         formationsListView.getItems().addAll(formationsDisponibles);
     }
+    @FXML
+    private void handleImportButtonAction(ActionEvent event) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Importer un fichier ICS");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Fichiers ICS", "*.ics"));
+        File selectedFile = fileChooser.showOpenDialog(primaryStage);
 
+        if (selectedFile != null) {
+            String userFileName = selectedFile.getName();
+            // Copier le fichier sélectionné dans le répertoire "Personnel"
+            String destinationPath = "./src/main/resources/org/example/calenjax/Personnel/" + selectedFile.getName();
+            try {
+                Files.copy(selectedFile.toPath(), Paths.get(destinationPath), StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException e) {
+                e.printStackTrace();
+                // Gérer les erreurs de copie de fichier
+                return;
+            }
+            // Mapper le nom du fichier avec l'utilisateur actuel dans userFilesMap
+            userFilesMap.put(getCurrentUser(), userFileName);
+            // Parser le fichier ICS et mettre à jour l'emploi du temps de l'utilisateur
+            ICSParserController parser = new ICSParserController();
+            this.filePath = destinationPath;
+            refreshDataCalendar("now", null);
+        }
+    }
+
+    @FXML
+    private void handleButtonActionPersonnel(ActionEvent event) {
+        // Récupérer l'identifiant de l'utilisateur actuellement connecté
+        String currentUser = getCurrentUser();
+        // Vérifier si l'utilisateur actuel a un fichier personnel associé
+        if (currentUser != null && userFilesMap.containsKey(currentUser)) {
+            String userFileName = userFilesMap.get(currentUser);
+
+            try {
+                // Charger et parser le fichier personnel de l'utilisateur actuel
+                String filePath = "./src/main/resources/org/example/calenjax/Personnel/" + userFileName;
+                ICSParserController parser = new ICSParserController();
+                this.filePath = filePath;
+                refreshDataCalendar("now", null);
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.err.println("Erreur lors du chargement de l'emploi du temps personnel de l'utilisateur " + currentUser + ".");
+            }
+        } else {
+            System.out.println("Aucun fichier personnel trouvé pour l'utilisateur " + currentUser + ".");
+        }
+    }
+
+    // Méthode pour récupérer l'utilisateur actuel
+    private String getCurrentUser() {
+        // Simuler un utilisateur connecté en utilisant une variable statique
+        return currentUser;
+    }
+
+    // Méthode pour définir l'utilisateur actuel
+    public static void setCurrentUser(String user) {
+        currentUser = user;
+    }
     private void handleBackgroundButtonClick(int col) {
         calendarWeek.setVisible(false);
         calendarWeek.setManaged(false);
@@ -211,8 +280,10 @@ public class HomePageController {
         if (repertoireSalles.isDirectory()) {
             for (File fichierSalle : repertoireSalles.listFiles()) {
                 if (fichierSalle.isFile()) {
-                    System.out.println(fichierSalle.getName());
-                    sallesDisponibles.add(fichierSalle.getName());
+                    String salleName = fichierSalle.getName();
+                    salleName = salleName.replace(".ics", "");
+                    salleName = salleName.replace("_", " ");
+                    sallesDisponibles.add(salleName);
                 }
             }
         }
