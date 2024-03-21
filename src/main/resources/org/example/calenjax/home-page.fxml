@@ -32,7 +32,7 @@
                              <Button mnemonicParsing="false" text="Light/Dark Mode" />
                              <Button fx:id="formationButton" contentDisplay="CENTER" mnemonicParsing="false" onAction="#handleFormationButtonClick" prefHeight="29.0" prefWidth="120.0" text="Formation" />
                              <Button fx:id="roomButton" mnemonicParsing="false" onAction="#handleSalleButtonClick" prefHeight="29.0" prefWidth="120.0" text="Salle" />
-                             <Button fx:id="personnalButton" mnemonicParsing="false" prefHeight="29.0" prefWidth="120.0" text="Personnel" />
+                             <Button fx:id="personnalButton" mnemonicParsing="false" onAction="#handleButtonActionPersonnel" prefHeight="29.0" prefWidth="120.0" text="Personnel" />
                          </children>
                      </HBox>
                   <VBox fx:id="searchBar" prefHeight="200.0" prefWidth="100.0">
@@ -61,7 +61,7 @@
                      <children>
                         <HBox alignment="CENTER" prefHeight="69.0" prefWidth="219.0">
                            <children>
-                              <Button mnemonicParsing="false" prefHeight="29.0" prefWidth="120.0" text="Importer" />
+                              <Button mnemonicParsing="false" onAction="#handleImportButtonAction" prefHeight="29.0" prefWidth="120.0" text="Importer" />
                            </children>
                         </HBox>
                      </children>

@@ -1,14 +1,8 @@
 package org.example.calenjax.Controlleurs;
 
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -20,9 +14,9 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.stage.Modality;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.example.calenjax.Event;
@@ -40,6 +34,10 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -47,6 +45,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.time.temporal.TemporalAdjusters;
 import java.util.Properties;
+import java.util.*;
 
 public class HomePageController {
     public Button now;
@@ -68,7 +67,9 @@ public class HomePageController {
     private TextField rechercheTextField;
     private LocalDateTime actualDate;
     private String mode = "week";
-    private String filePath = "./src/main/resources/org/example/calenjax/personnal/test.ics";
+
+    private String filePath = null;
+
     @FXML
     private Label labelDay;
     @FXML
@@ -87,6 +88,7 @@ public class HomePageController {
     private List<String> sallesDisponibles = new ArrayList<>();
     @FXML
     private ListView<String> formationsListView;
+    private static String currentUser;
     private List<Button> selectedButtons = new ArrayList<>();
     private ICSParserController parser;
     private Scene scene;
@@ -250,17 +252,17 @@ public class HomePageController {
     @FXML
     private void handleButtonActionChercher(ActionEvent event) {
         String selectedItem = formationsListView.getSelectionModel().getSelectedItem();
-        System.out.print("selected item: ");
-        System.out.println(selectedItem);
 
         if (selectedItem != null) {
             String filePath;
             if (formationsDisponibles.contains(selectedItem)) {
                 // Si l'élément sélectionné est une formation
-                filePath = "./src/main/resources/org/example/calenjax/Formations/" + selectedItem;
+                String fileName = selectedItem.replace(" ", "_") + ".ics";
+                filePath = "./src/main/resources/org/example/calenjax/Formations/" + fileName;
             } else if (sallesDisponibles.contains(selectedItem)) {
                 // Si l'élément sélectionné est une salle
-                filePath = "./src/main/resources/org/example/calenjax/Salles/" + selectedItem;
+                String fileName = selectedItem.replace(" ", "_") + ".ics";
+                filePath = "./src/main/resources/org/example/calenjax/Salles/" + fileName;
             } else {
                 // Si l'élément sélectionné n'est ni une formation ni une salle, vous pouvez gérer cela selon vos besoins
                 System.err.println("Élément sélectionné non valide.");
@@ -268,7 +270,6 @@ public class HomePageController {
             }
 
             this.mode="week";
-            setTypeCalendar("other");
             // Parser le fichier correspondant à la formation ou la salle sélectionnée
             this.filePath = filePath;
             ICSParserController parser = new ICSParserController();
@@ -294,7 +295,10 @@ public class HomePageController {
         if (repertoireFormations.isDirectory()) {
             for (File fichierFormation : repertoireFormations.listFiles()) {
                 if (fichierFormation.isFile()) {
-                    formationsDisponibles.add(fichierFormation.getName());
+                    String formationName = fichierFormation.getName();
+                    formationName = formationName.replace(".ics", "");
+                    formationName = formationName.replace("_", " ");
+                    formationsDisponibles.add(formationName);
                 }
             }
         }
@@ -302,7 +306,66 @@ public class HomePageController {
         // Mettre à jour la ListView des formations avec les formations disponibles
         formationsListView.getItems().addAll(formationsDisponibles);
     }
+    @FXML
+    private void handleImportButtonAction(ActionEvent event) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Importer un fichier ICS");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Fichiers ICS", "*.ics"));
+        File selectedFile = fileChooser.showOpenDialog(primaryStage);
 
+        if (selectedFile != null) {
+            String userFileName = getCurrentUser() + ".ics";
+            // Copier le fichier sélectionné dans le répertoire "Personnel"
+            String destinationPath = "./src/main/resources/org/example/calenjax/Personnel/" + userFileName;
+            try {
+                Files.copy(selectedFile.toPath(), Paths.get(destinationPath), StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException e) {
+                e.printStackTrace();
+                // Gérer les erreurs de copie de fichier
+                return;
+            }
+            // Parser le fichier ICS et mettre à jour l'emploi du temps de l'utilisateur
+            ICSParserController parser = new ICSParserController();
+            this.filePath = destinationPath;
+            refreshDataCalendar("now", null);
+        }
+    }
+
+    @FXML
+    private void handleButtonActionPersonnel(ActionEvent event) {
+        String currentUser = getCurrentUser();
+        if (currentUser != null) {
+            String userFileName = currentUser + ".ics";
+            String filePath = "./src/main/resources/org/example/calenjax/Personnel/" + userFileName;
+
+            File file = new File(filePath);
+            if (file.exists()) {
+                try {
+                    ICSParserController parser = new ICSParserController();
+                    this.filePath = filePath;
+                    refreshDataCalendar("now", null);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    System.err.println("Erreur lors du chargement de l'emploi du temps personnel de l'utilisateur " + currentUser + ".");
+                }
+            } else {
+                System.out.println("Aucun fichier personnel trouvé pour l'utilisateur " + currentUser + ".");
+            }
+        } else {
+            System.out.println("Utilisateur actuel non trouvé.");
+        }
+    }
+
+    // Méthode pour récupérer l'utilisateur actuel
+    private String getCurrentUser() {
+        // Simuler un utilisateur connecté en utilisant une variable statique
+        return currentUser;
+    }
+
+    // Méthode pour définir l'utilisateur actuel
+    public static void setCurrentUser(String user) {
+        currentUser = user;
+    }
     private void handleBackgroundButtonClick(int col) {
         calendarWeek.setVisible(false);
         calendarWeek.setManaged(false);
@@ -332,8 +395,10 @@ public class HomePageController {
         if (repertoireSalles.isDirectory()) {
             for (File fichierSalle : repertoireSalles.listFiles()) {
                 if (fichierSalle.isFile()) {
-                    System.out.println(fichierSalle.getName());
-                    sallesDisponibles.add(fichierSalle.getName());
+                    String salleName = fichierSalle.getName();
+                    salleName = salleName.replace(".ics", "");
+                    salleName = salleName.replace("_", " ");
+                    sallesDisponibles.add(salleName);
                 }
             }
         }
