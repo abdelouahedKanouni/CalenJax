@@ -190,7 +190,7 @@ public class HomePageController {
         this.month = this.actualDate.getMonth().getValue() - 1;
         this.year = this.actualDate.getYear();
 
-        refreshDataCalendar("now", null);
+        handleButtonActionPersonnel(new ActionEvent());
 
         // Ajout d'un écouteur pour mettre à jour le TextField lors de la sélection d'une formation
         formationsListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
