@@ -7,16 +7,16 @@ public class Event {
     private String uid;
     private String summary;
     private String description;
+    private String enseignant;
     private String location;
     private int startRow;
     private int startCol;
     private int rowSpan;
 
     public Event() {
-        // Constructeur par défaut
     }
 
-    public Event(String uid, String summary, String description, String location, int startRow, int startCol, int rowSpan) {
+    public Event(String uid, String summary, String description, String location, String enseignant, int startRow, int startCol, int rowSpan) {
         this.uid = uid;
         this.summary = summary;
         this.description = description;
@@ -24,10 +24,17 @@ public class Event {
         this.startRow = startRow;
         this.startCol = startCol;
         this.rowSpan = rowSpan;
+        this.enseignant = enseignant;
     }
 
     public String getSummary() {
         return summary;
+    }
+    public String getEnseignant() {
+        return enseignant;
+    }
+    public void setEnseignant(String enseignant) {
+        this.enseignant = enseignant;
     }
 
     public String getUid() {

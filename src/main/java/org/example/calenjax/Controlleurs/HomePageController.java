@@ -1,26 +1,44 @@
 package org.example.calenjax.Controlleurs;
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.Tooltip;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.example.calenjax.Event;
-import javafx.event.ActionEvent;
+import org.example.calenjax.HelloApplication;
 
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import javax.mail.Authenticator;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 import java.io.File;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -28,15 +46,20 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.time.temporal.TemporalAdjusters;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Locale;
+import java.util.Properties;
 
 public class HomePageController {
     public Button now;
     @FXML
     private GridPane calendarWeek;
+    @FXML
+    private Button addEvent;
+    @FXML
+    private Button formationButton;
+    @FXML
+    private Button roomButton;
+    @FXML
+    private Button personnalButton;
     @FXML
     private GridPane calendarDay;
     @FXML
@@ -56,18 +79,55 @@ public class HomePageController {
     private VBox searchBar;
     @FXML
     private Label monthName;
+    private int year;
+    private int month;
     private Stage primaryStage;
     private List<Button> eventButtons = new ArrayList<>();
     private List<String> formationsDisponibles = new ArrayList<>();
     private List<String> sallesDisponibles = new ArrayList<>();
     @FXML
     private ListView<String> formationsListView;
+    private List<Button> selectedButtons = new ArrayList<>();
+    private ICSParserController parser;
+    private Scene scene;
+    private String typeCalendar;
+    @FXML
+    private MenuItem buttonDay;
+    @FXML
+    private MenuItem buttonWeek;
+    @FXML
+    private MenuItem buttonMonth;
 
-    public void setPrimaryStage(Stage primaryStage) {
+    private void setTypeCalendar(String newValue){
+        this.typeCalendar = newValue;
+        if (!this.typeCalendar.equals("personnal")){
+            addEvent.setDisable(true);
+            addEvent.setVisible(false);
+            addEvent.setManaged(false);
+        }
+        else{
+            addEvent.setDisable(false);
+            addEvent.setVisible(true);
+            addEvent.setManaged(true);
+        }
+    }
+
+    public void setProperties(Stage primaryStage, Scene scene) {
         this.primaryStage = primaryStage;
+        this.scene = scene;
         homeImage.fitWidthProperty().bind(this.primaryStage.widthProperty());
+
+        scene.getAccelerators().put(new KeyCodeCombination(KeyCode.F, KeyCodeCombination.CONTROL_DOWN), formationButton::fire);
+        scene.getAccelerators().put(new KeyCodeCombination(KeyCode.S, KeyCodeCombination.CONTROL_DOWN), roomButton::fire);
+        scene.getAccelerators().put(new KeyCodeCombination(KeyCode.P, KeyCodeCombination.CONTROL_DOWN), personnalButton::fire);
+
+        scene.getAccelerators().put(new KeyCodeCombination(KeyCode.D, KeyCodeCombination.CONTROL_DOWN), buttonDay::fire);
+        scene.getAccelerators().put(new KeyCodeCombination(KeyCode.S, KeyCodeCombination.CONTROL_DOWN), buttonWeek::fire);
+        scene.getAccelerators().put(new KeyCodeCombination(KeyCode.M, KeyCodeCombination.CONTROL_DOWN), buttonMonth::fire);
     }
     public void initialize() {
+
+        setTypeCalendar("personnal");
 
         calendarDay.setVisible(false);
         calendarDay.setManaged(false);
@@ -77,8 +137,11 @@ public class HomePageController {
         searchBar.setManaged(false);
         searchBar.setVisible(false);
 
+        this.parser = new ICSParserController();
+
+        addEvent.setOnAction(event -> openEventWindow());
+
         // Calendrier par semaine
-        // Création des boutons de fond pour chaque cellule du calendrier
         int numRows = calendarWeek.getRowConstraints().size();
         int numCols = calendarWeek.getColumnConstraints().size();
 
@@ -87,6 +150,9 @@ public class HomePageController {
         for (int col = 1; col < numCols; col++) {
             for (int row = 1; row < numRows; row++) {
                 Button backgroundButton = createBackgroundButton(row, col);
+                backgroundButton.setOnMouseClicked(event -> {
+                    toggleSelectionBackgroundButton(backgroundButton);
+                });
                 calendarWeek.getChildren().add(backgroundButton);
             }
         }
@@ -100,6 +166,9 @@ public class HomePageController {
         for (int row = 1; row < numRows; row++) {
             for (int col = 1; col < numCols; col++) {
                 Button backgroundButton = createBackgroundButton(row, col);
+                backgroundButton.setOnMouseClicked(event -> {
+                    toggleSelectionBackgroundButton(backgroundButton);
+                });
                 calendarDay.getChildren().add(backgroundButton);
             }
         }
@@ -116,6 +185,8 @@ public class HomePageController {
         this.monthName.setText(this.actualDate.getMonth().getDisplayName(TextStyle.FULL, Locale.FRENCH));
         this.monthName.setTextFill(Color.GRAY);
         this.monthName.setFont(new Font("Arial", 20));
+        this.month = this.actualDate.getMonth().getValue() - 1;
+        this.year = this.actualDate.getYear();
 
         refreshDataCalendar("now", null);
 
@@ -126,6 +197,55 @@ public class HomePageController {
             }
         });
     }
+
+    private void toggleSelectionBackgroundButton
+            (Button button) {
+
+        if (selectedButtons.contains(button)) {
+            if (canDeleteButton(button)) {
+                selectedButtons.remove(button);
+                button.setStyle("");
+            }
+        } else {
+            if (selectedButtons.isEmpty() || isAdjacentVertically(button)) {
+                selectedButtons.add(button);
+                button.setStyle("-fx-background-color: lightblue;");
+            }
+        }
+    }
+
+    private boolean canDeleteButton(Button button) {
+        int countAdjacentButtons = 0;
+        int buttonRow = GridPane.getRowIndex(button);
+
+        for (Button selectedButton : selectedButtons) {
+            int selectedButtonRow = GridPane.getRowIndex(selectedButton);
+            if (Math.abs(buttonRow - selectedButtonRow) == 1) {
+                countAdjacentButtons++;
+            }
+        }
+
+        return countAdjacentButtons <= 1;
+    }
+
+    private boolean isAdjacentVertically(Button button) {
+        int buttonRow = GridPane.getRowIndex(button);
+        int buttonCol = GridPane.getColumnIndex(button);
+        if (buttonRow == 0) {
+            return true;
+        }
+
+        for (Button selectedButton : selectedButtons) {
+            int selectedButtonRow = GridPane.getRowIndex(selectedButton);
+            int selectedButtonCol = GridPane.getColumnIndex(selectedButton);
+            if (Math.abs(buttonRow - selectedButtonRow) == 1 && selectedButtonCol == buttonCol) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
 
     @FXML
     private void handleButtonActionChercher(ActionEvent event) {
@@ -148,6 +268,7 @@ public class HomePageController {
             }
 
             this.mode="week";
+            setTypeCalendar("other");
             // Parser le fichier correspondant à la formation ou la salle sélectionnée
             this.filePath = filePath;
             ICSParserController parser = new ICSParserController();
@@ -274,13 +395,15 @@ public class HomePageController {
         calendarWeek.getChildren().removeAll(eventButtons);
         calendarDay.getChildren().removeAll(eventButtons);
         eventButtons.clear();
+        calendarWeek.getChildren().removeAll(selectedButtons);
+        calendarDay.getChildren().removeAll(selectedButtons);
+        selectedButtons.clear();
 
         parameterBar.setManaged(true);
         parameterBar.setVisible(true);
         searchBar.setManaged(false);
         searchBar.setVisible(false);
 
-        ICSParserController parser = new ICSParserController();
         List<Event> events = new ArrayList<>();
 
         if (this.mode.equals("week")){
@@ -293,6 +416,9 @@ public class HomePageController {
                     this.actualDate = LocalDateTime.now();
                     events = parser.parse(this.filePath, this.mode, this.actualDate);
                 }
+                case "here" -> {
+                    events = parser.parse(this.filePath, this.mode, this.actualDate);
+                }
                 case "after" -> {
                     this.actualDate = this.actualDate.plusWeeks(1).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));;
                     events = parser.parse(this.filePath, this.mode, this.actualDate);
@@ -300,7 +426,7 @@ public class HomePageController {
             }
             for (int i = 1; i<6; i++ ){
                 Button backgroundHeaderButton = createBackgroundHeaderButton(0, i);
-                int numDay = Integer.parseInt(this.actualDate.format(DateTimeFormatter.ofPattern("d", Locale.FRENCH))) + i-1;
+                int numDay = this.actualDate.with(DayOfWeek.MONDAY).getDayOfMonth() + i-1;
                 backgroundHeaderButton.setText(backgroundHeaderButton.getText() + " " + numDay );
                 int finalRow = i;
                 backgroundHeaderButton.setOnAction(event -> handleBackgroundButtonClick(finalRow));
@@ -324,7 +450,13 @@ public class HomePageController {
                     events = parser.parse(this.filePath, this.mode, this.actualDate);
                 }
                 case "here" -> {
-                    DayOfWeek desiredDayOfWeek = convertFrenchDayOfWeek(date);
+                    DayOfWeek desiredDayOfWeek;
+                    if (date == null){
+                        desiredDayOfWeek = this.actualDate.getDayOfWeek();
+                    }
+                    else{
+                         desiredDayOfWeek = convertFrenchDayOfWeek(date);
+                    }
                     LocalDate dateTmp = LocalDate.from(this.actualDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)));
                     this.actualDate = dateTmp.with(TemporalAdjusters.nextOrSame(desiredDayOfWeek)).atStartOfDay();
                     labelDay.setText(this.actualDate.format(DateTimeFormatter.ofPattern("EEEE", Locale.FRENCH)) + " " + this.actualDate.format(DateTimeFormatter.ofPattern("d", Locale.FRENCH)));
@@ -391,6 +523,8 @@ public class HomePageController {
         }
 
         this.monthName.setText(this.actualDate.getMonth().getDisplayName(TextStyle.FULL, Locale.FRENCH));
+        this.month = this.actualDate.getMonth().getValue() - 1;
+        this.year = this.actualDate.getYear();
 
 
     }
@@ -482,14 +616,30 @@ public class HomePageController {
     }
 
     private void addEventButtonWeekCalendar(Event e) {
-        Button eventButton = new Button(e.getSummary() + e.getDescription());
+        Button eventButton = new Button(e.getSummary() + e.getLocation() + e.getDescription());
+
+        if (e.getEnseignant() != null){
+            eventButton.setOnAction(elem -> ouvrirEmail(e));
+        }
+
+        // classes des évènements
         if (e.getSummary().equals("Férié")){
             eventButton.getStyleClass().add("event-button-gray");
         }
+        if (e.getUid() != null){
+           String color = e.getUid().split("-")[0];
+            switch (color) {
+                case "blue" -> eventButton.getStyleClass().add("event-blue-button");
+                case "red" -> eventButton.getStyleClass().add("event-red-button");
+                case "green" -> eventButton.getStyleClass().add("event-green-button");
+                default -> eventButton.getStyleClass().add("event-button");
+            }
+        }
         else {
             eventButton.getStyleClass().add("event-button");
-
         }
+
+        // placement des évènements
         GridPane.setRowIndex(eventButton, e.getStartRow());
         GridPane.setColumnIndex(eventButton, e.getStartCol());
         GridPane.setRowSpan(eventButton, e.getRowSpan());
@@ -500,6 +650,78 @@ public class HomePageController {
         calendarWeek.getChildren().add(eventButton);
 
         eventButtons.add(eventButton);
+    }
+
+    private void ouvrirEmail(Event e) {
+        try {
+            FXMLLoader loader = new FXMLLoader(HelloApplication.class.getResource("send-email.fxml"));
+            Parent root = loader.load();
+
+            Stage sendEmail = new Stage();
+            sendEmail.setTitle("Envoie email");
+
+            Scene scene = new Scene(root);
+            sendEmail.setScene(scene);
+            sendEmail.show();
+
+            TextField addressField = (TextField) scene.lookup("#address");
+            String email = e.getEnseignant().toLowerCase();
+            String[] parts = email.split(" ");
+            String firstName = parts[0];
+            String lastName = parts[1];
+            email = firstName + "." + lastName + "@alumni.univ-avignon.fr";
+
+            addressField.setText(email);
+
+            TextField textField = (TextField) scene.lookup("#title");
+            TextArea textArea = (TextArea) scene.lookup("#text");
+            Button sendButton = (Button) scene.lookup("#send");
+
+            sendButton.setOnAction(event -> {
+                String address = addressField.getText();
+                String title = textField.getText();
+                String text = textArea.getText();
+                sendEmail(address, title, text);
+                sendEmail.close();
+            });
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private void sendEmail(String address, String title, String text) {
+        final String username = "calenjax@gmail.com";
+        final String password = "jzhy cbpg qkms iyyq";
+
+        Properties props = new Properties();
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.starttls.enable", "true");
+        props.put("mail.smtp.host", "smtp.gmail.com");
+        props.put("mail.smtp.port", "587");
+
+        Session session = Session.getInstance(props, new Authenticator() {
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(username, password);
+            }
+        });
+
+        try {
+            Message message = new MimeMessage(session);
+
+            message.setFrom(new InternetAddress("calenjax@gmail.com"));
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse("calenjax@gmail.com"));
+
+            message.setSubject(title);
+            message.setText(text);
+
+            Transport.send(message);
+
+            System.out.println("Email envoyé avec succès.");
+
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
     }
 
     private void addEventButtonDayCalendar(Event e) {
@@ -541,6 +763,130 @@ public class HomePageController {
             }
         }
         return "Lundi";
+    }
+
+    private void openEventWindow() {
+        if (selectedButtons.isEmpty()) {
+            return;
+        }
+        try {
+            FXMLLoader loader = new FXMLLoader(HelloApplication.class.getResource("add-event.fxml"));
+            Stage eventStage = new Stage();
+            eventStage.initModality(Modality.APPLICATION_MODAL);
+            eventStage.setResizable(false);
+            eventStage.setTitle("Ajout Evenement");
+            Scene scene = new Scene(loader.load());
+            eventStage.setScene(scene);
+            eventStage.show();
+
+            RadioButton blueRadioButton = (RadioButton) scene.lookup("#blue");
+            RadioButton redRadioButton = (RadioButton) scene.lookup("#red");
+            RadioButton greenRadioButton = (RadioButton) scene.lookup("#green");
+            ToggleGroup toggleGroup = new ToggleGroup();
+            blueRadioButton.setToggleGroup(toggleGroup);
+            redRadioButton.setToggleGroup(toggleGroup);
+            greenRadioButton.setToggleGroup(toggleGroup);
+
+            TextField titleTextField = (TextField) scene.lookup("#title");
+            TextField locationTextField = (TextField) scene.lookup("#location");
+            TextArea descriptionTextArea = (TextArea) scene.lookup("#description");
+
+            Button createButton = (Button) scene.lookup("#createButton");
+
+            createButton.setOnMouseClicked(event -> {
+                String title = titleTextField.getText() + "\n";
+                String location = locationTextField.getText() + "\n";
+                String description = descriptionTextArea.getText() + "\n";
+
+                int startRow = Integer.MAX_VALUE;
+                for (Button button : selectedButtons) {
+                    int row = GridPane.getRowIndex(button);
+                    if (row < startRow) {
+                        startRow = row;
+                    }
+                }
+                int startCol = GridPane.getColumnIndex(selectedButtons.get(0));
+                int highestRow = 0;
+                for (Button button : selectedButtons) {
+                    int row = GridPane.getRowIndex(button);
+                    if (row > highestRow) {
+                        highestRow = row;
+                    }
+                }
+                int rowSpan = highestRow - startRow + 1;
+                String color = "";
+                if (blueRadioButton.isSelected()) {
+                    color = "blue";
+                } else if (redRadioButton.isSelected()) {
+                    color = "red";
+                } else if (greenRadioButton.isSelected()) {
+                    color = "green";
+                }
+
+                if (this.mode.equals("week")){
+                    sendEvent(calendarWeek, startRow, startCol, rowSpan, title, location, description, color);
+                }
+                else{
+                    sendEvent(calendarDay, startRow, startCol, rowSpan, title, location, description, color);
+                }
+                refreshDataCalendar("here", null);
+                eventStage.close();
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void sendEvent(GridPane gridPane, int startRow, int startCol, int rowSpan, String title, String location, String description, String color){
+
+        Button button;
+        Label label;
+        String day = "0";
+        for (Node child : gridPane.getChildren()) {
+            Integer r = GridPane.getRowIndex(child);
+            Integer c = GridPane.getColumnIndex(child);
+            int row = r == null ? 0 : r;
+            int column = c == null ? 0 : c;
+            if (row == 0 && column == startCol && (child instanceof Button) && this.mode.equals("week")) {
+                button = (Button) child;
+                day = button.getText().split(" ")[1];
+            }
+            if (row == 0 && column == startCol && (child instanceof Label) && this.mode.equals("day")) {
+                label = (Label) child;
+                day = label.getText().split(" ")[1];
+            }
+        }
+
+        int minuteStart = 0;
+        int hourStart = ((startRow + 16) / 2);
+        startRow = startRow+1;
+        System.out.println(startRow);
+        if (startRow%2 == 1){
+            minuteStart = 30;
+            hourStart--;
+        }
+
+        int minuteEnd = 0;
+        int hourEnd = ((startRow + rowSpan + 16) / 2 ) - 1;
+        if ((startRow + rowSpan)%2 == 1){
+            minuteEnd = 30;
+        }
+
+        Date DtStart = new Date(this.year - 1900, this.month, Integer.parseInt(day), hourStart - 1, minuteStart, 0);
+        Date DtEnd = new Date(this.year - 1900, this.month, Integer.parseInt(day), hourEnd - 1, minuteEnd, 0);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd'T'HHmmss'Z'");
+        String formattedDtStart = sdf.format(DtStart);
+        String formattedDtEnd = sdf.format(DtEnd);
+        System.out.println(day);
+        System.out.println("start at : " + hourStart + "h" + minuteStart );
+        System.out.println("end at : " + hourEnd + "h" + minuteEnd );
+        System.out.println("DtStart : " + formattedDtStart );
+        System.out.println("DtStart : " + formattedDtEnd );
+
+        UUID uuid = UUID.randomUUID();
+        String uid = color + "-" + uuid.toString().substring(0, 9);
+
+        parser.addEvent(uid, formattedDtStart, formattedDtEnd, title, location, description);
     }
 
 }

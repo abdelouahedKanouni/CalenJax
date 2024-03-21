@@ -13,6 +13,7 @@ module org.example.calenjax {
     requires org.mnode.ical4j.core;
         requires com.fasterxml.jackson.databind;
     requires annotations;
+    requires java.mail;
 
     opens org.example.calenjax to javafx.fxml;
     exports org.example.calenjax;

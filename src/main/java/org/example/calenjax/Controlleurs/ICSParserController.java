@@ -2,23 +2,24 @@ package org.example.calenjax.Controlleurs;
 
 
 import net.fortuna.ical4j.data.CalendarBuilder;
+import net.fortuna.ical4j.data.CalendarOutputter;
 import net.fortuna.ical4j.data.ParserException;
 import net.fortuna.ical4j.filter.Filter;
 import net.fortuna.ical4j.filter.predicate.PeriodRule;
 import net.fortuna.ical4j.model.*;
 import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.model.Period;
+import net.fortuna.ical4j.model.component.VEvent;
+import net.fortuna.ical4j.model.property.*;
 import org.example.calenjax.Event;
-import org.example.calenjax.HelloApplication;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.ParseException;
 import java.time.*;
-import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.TextStyle;
-import java.time.temporal.ChronoField;
 import java.time.temporal.Temporal;
 import java.time.temporal.TemporalAdjusters;
 import java.util.*;
@@ -108,6 +109,8 @@ public class ICSParserController {
                 case "DTEND" -> dtend = property.getValue();
             }
         }
+
+        String enseignant = extractEnseignant(description);
         //System.out.println("dt  " + (dtstart) + " " + (dtend));
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd['T'HHmmssX]");
@@ -148,7 +151,7 @@ public class ICSParserController {
                 default -> 6;
             };
             int startRow = (dateTimeStart.getDayOfMonth() + startColFirstDayOfMonth) / 7;
-            return new Event(uid, summary, description, location, startRow + 1, startCol, 1);
+            return new Event(uid, summary, description, location, enseignant, startRow + 1, startCol, 1);
         }else{
             int startRow = (hourStart - 8) * 2;
             if (minuteStart == 30){startRow++;}
@@ -168,8 +171,20 @@ public class ICSParserController {
             }
             if (startRow<1){startRow=1;}
             if (startCol == 0){return null;}
-            return new Event(uid, summary, description, location, startRow + 1, startCol, rowSpan);
+            return new Event(uid, summary, description, location, enseignant, startRow + 1, startCol, rowSpan);
         }
+    }
+
+    public static String extractEnseignant(String input) {
+        String enseignant = null;
+        String[] lines = input.split("\\n");
+        for (String line : lines) {
+            if (line.contains("Enseignant")) {
+                enseignant = line.split(":")[1].trim();
+                break;
+            }
+        }
+        return enseignant;
     }
 
     private static LocalDateTime parseWithDefaultTime(String input, DateTimeFormatter formatter) {
@@ -177,6 +192,35 @@ public class ICSParserController {
             return LocalDateTime.parse(input, formatter);
         } catch (Exception e) {
             return LocalDateTime.parse(input + "T000000Z", formatter);
+        }
+    }
+
+    public void addEvent(String Uid, String DtStart, String DtEnd, String title, String Location, String Description){
+        try {
+            // Charger le fichier .ics existant en tant que calendrier
+            FileInputStream fis = new FileInputStream(this.lastFilePath);
+            CalendarBuilder builder = new CalendarBuilder();
+            Calendar calendar = builder.build(fis);
+
+            VEvent vevent = new VEvent()
+                    .withProperty(new Uid(Uid))
+                    .withProperty(new Summary(title))
+                    .withProperty(new DtStart<>(DtStart))
+                    .withProperty(new DtEnd<>(DtEnd))
+                    .withProperty(new Location(Location))
+                    .withProperty(new Description(Description))
+                    .getFluentTarget();
+
+            System.out.println(this.lastFilePath);
+            // Ajouter l'événement au calendrier
+            calendar.add(vevent);
+
+            // Sauvegarder le calendrier mis à jour dans le fichier .ics
+            FileOutputStream fos = new FileOutputStream(this.lastFilePath);
+            CalendarOutputter outputter = new CalendarOutputter();
+            outputter.output(calendar, fos);
+        } catch (IOException | ParserException e) {
+            e.printStackTrace();
         }
     }
 

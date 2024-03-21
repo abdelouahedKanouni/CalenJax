@@ -15,7 +15,7 @@ public class HelloApplication extends Application {
         Scene scene = new Scene(fxmlLoader.load(), 1400, 700);
 
         HomePageController controller = fxmlLoader.getController();
-        controller.setPrimaryStage(stage);
+        controller.setProperties(stage, scene);
 
         scene.getStylesheets().add("style.css");
         stage.setTitle("Hello!");
