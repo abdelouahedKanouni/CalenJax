@@ -67,7 +67,6 @@ public class HomePageController {
     @FXML
     private ListView<String> formationsListView;
     private static String currentUser;
-    private Map<String, String> userFilesMap;
 
     public void setPrimaryStage(Stage primaryStage) {
         this.primaryStage = primaryStage;
@@ -75,7 +74,6 @@ public class HomePageController {
     }
     public void initialize() {
 
-        userFilesMap = new HashMap<>();
         calendarDay.setVisible(false);
         calendarDay.setManaged(false);
         calendarMonth.setVisible(false);
@@ -199,9 +197,9 @@ public class HomePageController {
         File selectedFile = fileChooser.showOpenDialog(primaryStage);
 
         if (selectedFile != null) {
-            String userFileName = selectedFile.getName();
+            String userFileName = getCurrentUser() + ".ics";
             // Copier le fichier sélectionné dans le répertoire "Personnel"
-            String destinationPath = "./src/main/resources/org/example/calenjax/Personnel/" + selectedFile.getName();
+            String destinationPath = "./src/main/resources/org/example/calenjax/Personnel/" + userFileName;
             try {
                 Files.copy(selectedFile.toPath(), Paths.get(destinationPath), StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException e) {
@@ -209,8 +207,6 @@ public class HomePageController {
                 // Gérer les erreurs de copie de fichier
                 return;
             }
-            // Mapper le nom du fichier avec l'utilisateur actuel dans userFilesMap
-            userFilesMap.put(getCurrentUser(), userFileName);
             // Parser le fichier ICS et mettre à jour l'emploi du temps de l'utilisateur
             ICSParserController parser = new ICSParserController();
             this.filePath = destinationPath;
@@ -220,24 +216,26 @@ public class HomePageController {
 
     @FXML
     private void handleButtonActionPersonnel(ActionEvent event) {
-        // Récupérer l'identifiant de l'utilisateur actuellement connecté
         String currentUser = getCurrentUser();
-        // Vérifier si l'utilisateur actuel a un fichier personnel associé
-        if (currentUser != null && userFilesMap.containsKey(currentUser)) {
-            String userFileName = userFilesMap.get(currentUser);
+        if (currentUser != null) {
+            String userFileName = currentUser + ".ics";
+            String filePath = "./src/main/resources/org/example/calenjax/Personnel/" + userFileName;
 
-            try {
-                // Charger et parser le fichier personnel de l'utilisateur actuel
-                String filePath = "./src/main/resources/org/example/calenjax/Personnel/" + userFileName;
-                ICSParserController parser = new ICSParserController();
-                this.filePath = filePath;
-                refreshDataCalendar("now", null);
-            } catch (Exception e) {
-                e.printStackTrace();
-                System.err.println("Erreur lors du chargement de l'emploi du temps personnel de l'utilisateur " + currentUser + ".");
+            File file = new File(filePath);
+            if (file.exists()) {
+                try {
+                    ICSParserController parser = new ICSParserController();
+                    this.filePath = filePath;
+                    refreshDataCalendar("now", null);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    System.err.println("Erreur lors du chargement de l'emploi du temps personnel de l'utilisateur " + currentUser + ".");
+                }
+            } else {
+                System.out.println("Aucun fichier personnel trouvé pour l'utilisateur " + currentUser + ".");
             }
         } else {
-            System.out.println("Aucun fichier personnel trouvé pour l'utilisateur " + currentUser + ".");
+            System.out.println("Utilisateur actuel non trouvé.");
         }
     }
 
