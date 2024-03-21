@@ -29,7 +29,7 @@
                  <children>
                      <HBox alignment="CENTER" prefHeight="50.0" prefWidth="1463.0" spacing="30.0" style="-fx-background-color: D3D3D3;" styleClass="root" stylesheets="">
                          <children>
-                             <Button mnemonicParsing="false" text="Light/Dark Mode" />
+                             <Button fx:id="toggleModeButton" mnemonicParsing="false" text="Light/Dark Mode" />
                              <Button fx:id="formationButton" contentDisplay="CENTER" mnemonicParsing="false" onAction="#handleFormationButtonClick" prefHeight="29.0" prefWidth="120.0" text="Formation" />
                              <Button fx:id="roomButton" mnemonicParsing="false" onAction="#handleSalleButtonClick" prefHeight="29.0" prefWidth="120.0" text="Salle" />
                              <Button fx:id="personnalButton" mnemonicParsing="false" onAction="#handleButtonActionPersonnel" prefHeight="29.0" prefWidth="120.0" text="Personnel" />

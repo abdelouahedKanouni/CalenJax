@@ -60,6 +60,8 @@ public class HomePageController {
     @FXML
     private Button personnalButton;
     @FXML
+    private Button toggleModeButton;
+    @FXML
     private GridPane calendarDay;
     @FXML
     private GridPane calendarMonth;
@@ -67,9 +69,7 @@ public class HomePageController {
     private TextField rechercheTextField;
     private LocalDateTime actualDate;
     private String mode = "week";
-
     private String filePath = null;
-
     @FXML
     private Label labelDay;
     @FXML
@@ -81,6 +81,7 @@ public class HomePageController {
     @FXML
     private Label monthName;
     private int year;
+    private boolean isDarkMode = false;
     private int month;
     private Stage primaryStage;
     private List<Button> eventButtons = new ArrayList<>();
@@ -192,12 +193,27 @@ public class HomePageController {
 
         handleButtonActionPersonnel(new ActionEvent());
 
+        toggleModeButton.setOnAction(event -> toggleMode());
+
         // Ajout d'un écouteur pour mettre à jour le TextField lors de la sélection d'une formation
         formationsListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 rechercheTextField.setText(newValue);
             }
         });
+    }
+
+    private void toggleMode() {
+        isDarkMode = !isDarkMode;
+
+        Scene scene = Stage.getWindows().getFirst().getScene();
+        scene.getStylesheets().clear();
+
+        if (isDarkMode) {
+            scene.getStylesheets().add("dark.css");
+        } else {
+            scene.getStylesheets().add("light.css");
+        }
     }
 
     private void toggleSelectionBackgroundButton
@@ -723,9 +739,14 @@ public class HomePageController {
             Parent root = loader.load();
 
             Stage sendEmail = new Stage();
+            sendEmail.initModality(Modality.APPLICATION_MODAL);
+            sendEmail.setResizable(false);
+
             sendEmail.setTitle("Envoie email");
 
             Scene scene = new Scene(root);
+            if (isDarkMode) scene.getStylesheets().add("dark.css");
+            else scene.getStylesheets().add("light.css");
             sendEmail.setScene(scene);
             sendEmail.show();
 
@@ -841,6 +862,8 @@ public class HomePageController {
             eventStage.setResizable(false);
             eventStage.setTitle("Ajout Evenement");
             Scene scene = new Scene(loader.load());
+            if (isDarkMode) scene.getStylesheets().add("dark.css");
+            else scene.getStylesheets().add("light.css");
             eventStage.setScene(scene);
             eventStage.show();
 

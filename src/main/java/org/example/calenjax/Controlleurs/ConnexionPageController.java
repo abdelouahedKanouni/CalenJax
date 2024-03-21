@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.animation.TranslateTransition;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
@@ -14,7 +13,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import org.example.calenjax.HelloApplication;
 
 import java.io.IOException;
 
@@ -55,7 +53,7 @@ public class ConnexionPageController {
                         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/org/example/calenjax/home-page.fxml"));
                         Scene scene = new Scene(fxmlLoader.load(), 1400, 700);
                         Scene currentScene = connecterButton.getScene();
-                        scene.getStylesheets().add("style.css");
+                        scene.getStylesheets().add("light.css");
                         Stage stage = (Stage) currentScene.getWindow();
                         stage.setScene(scene);
                         stage.setTitle("Accueil");

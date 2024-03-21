@@ -1,0 +1,189 @@
+.grid-pane-border {
+    -fx-border-color: darkgray;
+    -fx-background-color: #333333;
+    -fx-text-fill: #D5DCE2;
+}
+
+.label {
+    -fx-text-fill: #D5DCE2;
+}
+
+.button {
+    -fx-background-color: #333333;
+    -fx-text-fill: #D5DCE2;
+}
+
+.menu-button {
+    -fx-background-color: #333333;
+    -fx-text-fill: #D5DCE2;
+}
+
+.menu-item {
+    -fx-background-color: #333333;
+    -fx-text-fill: #D5DCE2;
+}
+
+HBox, VBox, BorderPane {
+    -fx-border-color: #737373;
+    -fx-background-color: #737373; /* Dark gray */
+    -fx-text-fill: #D5DCE2; /* Light gray */
+}
+
+
+.background-button {
+    -fx-background-color: #333333;
+    -fx-border-color: darkgray;
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
+    -fx-border-width: 0.3;
+}
+
+.background-header-button {
+    -fx-background-color: #222222;
+    -fx-border-color: darkgray;
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
+    -fx-border-width: 0.3;
+    -fx-text-fill: #D5DCE2;
+}
+
+.background-button:hover {
+    -fx-background-color: #444444;
+}
+
+.background-header-button:hover {
+    -fx-background-color: darkgray;
+}
+
+.event-button {
+    -fx-background-color: #b4c2d0;
+    -fx-background-radius: 5 5 5 5;
+    -fx-border-color: darkgray;
+    -fx-border-width: 1 1 1 1;
+    -fx-content-display: top;
+    -fx-alignment: top-left;
+}
+.event-blue-button {
+    -fx-background-color: #b4c2d0;
+    -fx-background-radius: 5 5 5 5;
+    -fx-border-color: darkgray;
+    -fx-border-width: 1 1 1 1;
+    -fx-content-display: top;
+    -fx-alignment: top-left;
+}
+
+.event-blue-button:hover {
+    -fx-background-color: #1E90FF;
+    -fx-background-radius: 5 5 5 5;
+    -fx-border-color: darkgray;
+    -fx-border-width: 1;
+    -fx-content-display: top;
+    -fx-alignment: top-left;
+}
+
+.event-red-button {
+    -fx-background-color: #e89999;
+    -fx-background-radius: 5 5 5 5;
+    -fx-border-color: darkgray;
+    -fx-border-width: 1 1 1 1;
+    -fx-content-display: top;
+    -fx-alignment: top-left;
+}
+.event-red-button:hover {
+    -fx-background-color: #ea6a6a;
+    -fx-background-radius: 5 5 5 5;
+    -fx-border-color: darkgray;
+    -fx-border-width: 1 1 1 1;
+    -fx-content-display: top;
+    -fx-alignment: top-left;
+}
+.event-green-button {
+    -fx-background-color: #acf1ac;
+    -fx-background-radius: 5 5 5 5;
+    -fx-border-color: darkgray;
+    -fx-border-width: 1 1 1 1;
+    -fx-content-display: top;
+    -fx-alignment: top-left;
+}
+.event-green-button:hover {
+    -fx-background-color: #78ef78;
+    -fx-background-radius: 5 5 5 5;
+    -fx-border-color: darkgray;
+    -fx-border-width: 1 1 1 1;
+    -fx-content-display: top;
+    -fx-alignment: top-left;
+}
+
+.event-month-button {
+    -fx-background-color: #6075B6;
+    -fx-background-radius: 3em;
+    -fx-min-width: 15px;
+    -fx-min-height: 15px;
+    -fx-max-width: 15px;
+    -fx-max-height: 15px;
+}
+
+.background-month-button-2 {
+    -fx-background-color: #2A2A2A;
+    -fx-border-color: darkgray;
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
+    -fx-border-width: 0.3;
+}
+.background-month-button-2 {
+    -fx-background-color: #2A2A2A;
+    -fx-border-color: darkgray;
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
+    -fx-border-width: 0.3;
+}
+
+.background-month-button-2:hover {
+    -fx-background-color: #444444;
+    -fx-border-color: darkgray;
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
+    -fx-border-width: 0.3;
+}
+
+.background-month-button-today {
+    -fx-background-color: #2A2A2A;
+    -fx-border-color: darkgray;
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
+    -fx-border-width: 0.3;
+}
+
+.background-month-button-today:hover {
+    -fx-background-color: #444444;
+    -fx-border-color: darkgray;
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
+    -fx-border-width: 0.3;
+}
+
+.event-month-button {
+    -fx-background-color: #b4c2d0;
+    -fx-background-radius: 3em;
+    -fx-min-width: 15px;
+    -fx-min-height: 15px;
+    -fx-max-width: 15px;
+    -fx-max-height: 15px;
+}
+
+.event-month-button:hover {
+    -fx-background-color: #1E90FF;
+}
+
+.event-button:hover {
+    -fx-background-color: #1E90FF;
+}
+.event-button-gray {
+    -fx-background-color: #2A2A2A;
+    -fx-content-display: top;
+    -fx-alignment: top-left;
+    -fx-background-radius: 5 5 5 5;
+    -fx-border-color: darkgray;
+    -fx-border-width: 10 0 0 0;
+    -fx-text-color: #D5DCE2;
+}
