@@ -129,7 +129,7 @@ public class ICSParserController {
         ZonedDateTime dateTimeStart = parseAndAdjustTimezone(dtstart, formatter, zoneId);
         ZonedDateTime dateTimeEnd = parseAndAdjustTimezone(dtend, formatter, zoneId);
 
-        int hourStart = dateTimeStart.getHour() + 1;
+        int hourStart = dateTimeStart.getHour();
         int minuteStart = dateTimeStart.getMinute();
 
         int hourEnd = dateTimeEnd.getHour();
