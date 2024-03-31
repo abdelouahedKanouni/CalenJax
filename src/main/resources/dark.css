@@ -18,15 +18,15 @@
     -fx-text-fill: #D5DCE2;
 }
 
-.menu-item {
+.menu-item, ComboItem {
     -fx-background-color: #333333;
     -fx-text-fill: #D5DCE2;
 }
 
 HBox, VBox, BorderPane {
     -fx-border-color: #737373;
-    -fx-background-color: #737373; /* Dark gray */
-    -fx-text-fill: #D5DCE2; /* Light gray */
+    -fx-background-color: #737373;
+    -fx-text-fill: #D5DCE2;
 }
 
 

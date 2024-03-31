@@ -304,7 +304,7 @@ public class HomePageController {
                 TextField filterText = (TextField) scene.lookup("#filterText");
                 currentFilterValue = filterText.getText();
                 String filterValue = filterText.getText();
-                refreshDataCalendar("here", null,filterValue);
+                refreshDataCalendar("here", null, filterValue);
 
                 filterPopup.close();
             });
@@ -642,6 +642,9 @@ public class HomePageController {
                 case "now" -> {
                     this.actualDate = LocalDateTime.now().withDayOfMonth(1);
                     events = parser.parse(this.filePath, this.mode, this.actualDate,filterValue);
+                }
+                case "here" -> {
+                    events = parser.parse(this.filePath, this.mode, this.actualDate, filterValue);
                 }
                 case "after" -> {
                     this.actualDate = this.actualDate.plusMonths(1).withDayOfMonth(1);
