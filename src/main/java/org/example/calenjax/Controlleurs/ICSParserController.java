@@ -19,6 +19,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.ParseException;
 import java.time.*;
+import java.time.format.DateTimeParseException;
 import java.time.format.TextStyle;
 import java.time.temporal.Temporal;
 import java.time.temporal.TemporalAdjusters;
@@ -120,17 +121,18 @@ public class ICSParserController {
         }
 
         String enseignant = extractEnseignant(description);
-        //System.out.println("dt  " + (dtstart) + " " + (dtend));
+//        System.out.println("dt  " + (dtstart) + " " + (dtend));
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd['T'HHmmssX]");
+        ZoneId zoneId = ZoneId.of("Europe/Paris");
 
-        LocalDateTime dateTimeStart = parseWithDefaultTime(dtstart, formatter);
-        LocalDateTime dateTimeEnd = parseWithDefaultTime(dtend, formatter);
+        ZonedDateTime dateTimeStart = parseAndAdjustTimezone(dtstart, formatter, zoneId);
+        ZonedDateTime dateTimeEnd = parseAndAdjustTimezone(dtend, formatter, zoneId);
 
         int hourStart = dateTimeStart.getHour() + 1;
         int minuteStart = dateTimeStart.getMinute();
 
-        int hourEnd = dateTimeEnd.getHour() + 1;
+        int hourEnd = dateTimeEnd.getHour();
         int minuteEnd = dateTimeEnd.getMinute();
 
         String dayName = dateTimeStart.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.getDefault());
@@ -192,11 +194,12 @@ public class ICSParserController {
         return enseignant;
     }
 
-    private static LocalDateTime parseWithDefaultTime(String input, DateTimeFormatter formatter) {
+    private static ZonedDateTime parseAndAdjustTimezone(String input, DateTimeFormatter formatter, ZoneId zoneId) {
         try {
-            return LocalDateTime.parse(input, formatter);
-        } catch (Exception e) {
-            return LocalDateTime.parse(input + "T000000Z", formatter);
+            return ZonedDateTime.parse(input, formatter).withZoneSameInstant(zoneId);
+        } catch (DateTimeParseException e) {
+            String inputWithDefaultTimezone = input + "T000000Z";
+            return ZonedDateTime.parse(inputWithDefaultTimezone, formatter).withZoneSameInstant(zoneId);
         }
     }
 

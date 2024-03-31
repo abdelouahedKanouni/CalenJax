@@ -1,10 +1,1 @@
-[
-  {
-    "identifiant": "abdel",
-    "motDePasse": "abdel"
-  },
-  {
-    "identifiant": "romain",
-    "motDePasse": "romain"
-  }
-]
+[{"identifiant":"abdel","motDePasse":"abdel","isDark":true},{"identifiant":"romain","motDePasse":"romain","isDark":false}]

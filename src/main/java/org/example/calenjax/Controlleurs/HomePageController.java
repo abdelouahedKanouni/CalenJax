@@ -1,5 +1,8 @@
 package org.example.calenjax.Controlleurs;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -92,6 +95,7 @@ public class HomePageController {
     @FXML
     private ListView<String> formationsListView;
     private static String currentUser;
+    private static String typeCurrentUser;
     private List<Button> selectedButtons = new ArrayList<>();
     private ICSParserController parser;
     private Scene scene;
@@ -105,15 +109,16 @@ public class HomePageController {
 
     private void setTypeCalendar(String newValue){
         this.typeCalendar = newValue;
-        if (!this.typeCalendar.equals("personnal")){
-            addEvent.setDisable(true);
-            addEvent.setVisible(false);
-            addEvent.setManaged(false);
-        }
-        else{
+        if (this.typeCalendar.equals("personnal") || this.typeCalendar.equals("room")){
             addEvent.setDisable(false);
             addEvent.setVisible(true);
             addEvent.setManaged(true);
+        }
+        else{
+
+            addEvent.setDisable(true);
+            addEvent.setVisible(false);
+            addEvent.setManaged(false);
         }
     }
 
@@ -206,15 +211,35 @@ public class HomePageController {
     }
 
     private void toggleMode() {
-        isDarkMode = !isDarkMode;
 
-        Scene scene = Stage.getWindows().get(0).getScene();
-        scene.getStylesheets().clear();
+        try {
+            File jsonFile = new File("./src/main/resources/etudiants.json");
+            if (getTypeCurrentUser().equals("enseignant")){
+                jsonFile = new File("./src/main/resources/enseignants.json");
+            }
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode rootNode = objectMapper.readTree(jsonFile);
+            for (JsonNode utilisateurNode : rootNode) {
+                if (utilisateurNode.get("identifiant").asText().equals(getCurrentUser())) {
+                    this.isDarkMode = !utilisateurNode.get("isDark").asBoolean();
+                    ((ObjectNode) utilisateurNode).put("isDark", this.isDarkMode);
+                    objectMapper.writeValue(jsonFile, rootNode);
+                    break;
+                }
+            }
 
-        if (isDarkMode) {
-            scene.getStylesheets().add("dark.css");
-        } else {
-            scene.getStylesheets().add("light.css");
+            Scene scene = Stage.getWindows().getFirst().getScene();
+            scene.getStylesheets().clear();
+
+            if (isDarkMode) {
+                scene.getStylesheets().add("dark.css");
+            } else {
+                scene.getStylesheets().add("light.css");
+            }
+
+        }
+        catch ( Exception e ){
+            e.printStackTrace();
         }
     }
 
@@ -317,10 +342,12 @@ public class HomePageController {
             String filePath;
             if (formationsDisponibles.contains(selectedItem)) {
                 // Si l'élément sélectionné est une formation
+                setTypeCalendar("formation");
                 String fileName = selectedItem.replace(" ", "_") + ".ics";
                 filePath = "./src/main/resources/org/example/calenjax/Formations/" + fileName;
             } else if (sallesDisponibles.contains(selectedItem)) {
                 // Si l'élément sélectionné est une salle
+                setTypeCalendar("room");
                 String fileName = selectedItem.replace(" ", "_") + ".ics";
                 filePath = "./src/main/resources/org/example/calenjax/Salles/" + fileName;
             } else {
@@ -403,6 +430,7 @@ public class HomePageController {
                 try {
                     ICSParserController parser = new ICSParserController();
                     this.filePath = filePath;
+                    setTypeCalendar("personnal");
                     refreshDataCalendar("now", null,"");
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -425,6 +453,14 @@ public class HomePageController {
     // Méthode pour définir l'utilisateur actuel
     public static void setCurrentUser(String user) {
         currentUser = user;
+    }
+
+    private String getTypeCurrentUser() {
+        return typeCurrentUser;
+    }
+
+    public static void setTypeCurrentUser(String user) {
+        typeCurrentUser = user;
     }
     private void handleBackgroundButtonClick(int col) {
         calendarWeek.setVisible(false);
@@ -772,6 +808,11 @@ public class HomePageController {
         GridPane.setFillWidth(eventButton, true);
         eventButton.setMaxHeight(Double.MAX_VALUE);
         eventButton.setMaxWidth(Double.MAX_VALUE);
+
+        Tooltip tooltip = new Tooltip(e.getDescription());
+        tooltip.setShowDelay(Duration.ZERO);
+        Tooltip.install(eventButton, tooltip);
+
         calendarWeek.getChildren().add(eventButton);
 
         eventButtons.add(eventButton);
@@ -904,7 +945,8 @@ public class HomePageController {
             Stage eventStage = new Stage();
             eventStage.initModality(Modality.APPLICATION_MODAL);
             eventStage.setResizable(false);
-            eventStage.setTitle("Ajout Evenement");
+            if (this.typeCalendar.equals("room")) eventStage.setTitle("Reservation Salle");
+            else eventStage.setTitle("Ajout Evenement");
             Scene scene = new Scene(loader.load());
             if (isDarkMode) scene.getStylesheets().add("dark.css");
             else scene.getStylesheets().add("light.css");
@@ -918,6 +960,20 @@ public class HomePageController {
             blueRadioButton.setToggleGroup(toggleGroup);
             redRadioButton.setToggleGroup(toggleGroup);
             greenRadioButton.setToggleGroup(toggleGroup);
+            blueRadioButton.setSelected(true);
+
+            if (this.typeCalendar.equals("room")){
+                redRadioButton.setManaged(false);
+                greenRadioButton.setManaged(false);
+                redRadioButton.setVisible(false);
+                greenRadioButton.setVisible(false);
+            }
+            else{
+                redRadioButton.setManaged(true);
+                greenRadioButton.setManaged(true);
+                redRadioButton.setVisible(true);
+                greenRadioButton.setVisible(true);
+            }
 
             TextField titleTextField = (TextField) scene.lookup("#title");
             TextField locationTextField = (TextField) scene.lookup("#location");

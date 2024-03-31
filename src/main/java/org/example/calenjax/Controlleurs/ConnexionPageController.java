@@ -54,11 +54,17 @@ public class ConnexionPageController {
                 if (utilisateur.get("identifiant").asText().equals(identifiant) && utilisateur.get("motDePasse").asText().equals(motDePasse)) {
                     try {
                         HomePageController.setCurrentUser(utilisateur.get("identifiant").asText());
+                        HomePageController.setTypeCurrentUser(this.type);
                         // Charger la page d'accueil
                         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/org/example/calenjax/home-page.fxml"));
                         Scene scene = new Scene(fxmlLoader.load(), 1400, 700);
                         Scene currentScene = connecterButton.getScene();
-                        scene.getStylesheets().add("light.css");
+                        if (utilisateur.get("isDark").asBoolean()){
+                            scene.getStylesheets().add("dark.css");
+                        }
+                        else{
+                            scene.getStylesheets().add("light.css");
+                        }
                         Stage stage = (Stage) currentScene.getWindow();
                         stage.setScene(scene);
                         stage.setTitle("Accueil");
