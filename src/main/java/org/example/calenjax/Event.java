@@ -9,6 +9,7 @@ public class Event {
     private String description;
     private String enseignant;
     private String location;
+    private String matiere;
     private int startRow;
     private int startCol;
     private int rowSpan;
@@ -16,7 +17,7 @@ public class Event {
     public Event() {
     }
 
-    public Event(String uid, String summary, String description, String location, String enseignant, int startRow, int startCol, int rowSpan) {
+    public Event(String uid, String summary, String description, String location, String enseignant, int startRow, int startCol, int rowSpan, String matiere) {
         this.uid = uid;
         this.summary = summary;
         this.description = description;
@@ -25,6 +26,7 @@ public class Event {
         this.startCol = startCol;
         this.rowSpan = rowSpan;
         this.enseignant = enseignant;
+        this.matiere = matiere;
     }
 
     public String getSummary() {
@@ -87,5 +89,9 @@ public class Event {
 
     public void setRowSpan(int rowSpan) {
         this.rowSpan = rowSpan;
+    }
+
+    public String getMatiere() {
+        return matiere;
     }
 }

@@ -28,6 +28,11 @@ public class ConnexionPageController {
     private String type = "etudiant";
     public void connexion() {
 
+        if (!etudiantButton.isSelected() && !enseignantButton.isSelected()) {
+            errorMessage.setText("Veuillez sélectionner étudiant ou enseignant.");
+            playErrorAnimation(errorMessage);
+            return;
+        }
         String identifiant = identifiantField.getText();
         String motDePasse = motDePasseField.getText();
         ObjectMapper objectMapper = new ObjectMapper();

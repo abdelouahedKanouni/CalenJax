@@ -25,14 +25,14 @@ import java.time.temporal.Temporal;
 import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 import java.time.format.DateTimeFormatter;
+import java.util.stream.Collectors;
 
 public class ICSParserController {
 
     private String lastFilePath;
 
-    public List<Event> parse(String filePath, String mode, LocalDateTime date)  {
+    public List<Event> parse(String filePath, String mode, LocalDateTime date, String filterValue)  {
         try {
-            System.out.println(filePath);
             if (filePath == null || filePath.isEmpty()){
                 if (this.lastFilePath == null){
                     return Collections.emptyList();
@@ -48,20 +48,26 @@ public class ICSParserController {
 
             Filter filter = getFilter(date, mode);
 
-            List eventsToday = (List) filter.filter(calendar.getComponents(Component.VEVENT));
-            List events = new ArrayList<>();
-            for (Object c : eventsToday){
-                Event e = convertToEvent((Component) c, mode);
+            List<Component> eventsToday = (List<Component>) filter.filter(calendar.getComponents(Component.VEVENT)); // Spécifiez le type comme List<Component>
+            List<Event> events = new ArrayList<>(); // Déclarez la liste d'événements comme List<Event>
+            for (Component c : eventsToday){ // Utilisez Component comme type des éléments dans la boucle
+                Event e = convertToEvent(c, mode); // Convertissez Component en Event
                 if (e != null){
                     events.add(e);
                 }
             }
-            return events;
+            if(filterValue == null || filterValue.isEmpty()){
+                return events;
+            } else {
+                List<Event> filteredEvents = events.stream()
+                        .filter(event -> event.getSummary().toLowerCase().contains(filterValue.toLowerCase()) || event.getMatiere().toLowerCase().contains(filterValue.toLowerCase()) || event.getLocation().toLowerCase().contains(filterValue.toLowerCase()))
+                        .collect(Collectors.toList());
+                return filteredEvents;
+            }
 
         } catch (IOException | ParserException e) {
             e.printStackTrace();
         }
-
         return null;
     }
 
@@ -72,9 +78,6 @@ public class ICSParserController {
         if (mode.equals("month")){
             startOfDateTime = LocalDateTime.of(LocalDate.from(date), LocalTime.MIN);
             endOfDateTime = date.with(TemporalAdjusters.lastDayOfMonth()).with(LocalTime.MAX);
-//            System.out.println(startOfDateTime);
-//            System.out.println(endOfDateTime);
-//            System.out.println("--------------");
         }
         else if (mode.equals("week")){
             LocalDate startOfWeek = date.toLocalDate().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
@@ -100,6 +103,7 @@ public class ICSParserController {
         String summary = "";
         String description = "";
         String location = "";
+        String matiere = "";
 
         String dtstart = "";
         String dtend = "";
@@ -111,6 +115,8 @@ public class ICSParserController {
                 case "LOCATION" -> location = property.getValue();
                 case "DTSTART" -> dtstart = property.getValue();
                 case "DTEND" -> dtend = property.getValue();
+                case "Matière" -> matiere = property.getValue();
+
             }
         }
 
@@ -123,11 +129,7 @@ public class ICSParserController {
         ZonedDateTime dateTimeStart = parseAndAdjustTimezone(dtstart, formatter, zoneId);
         ZonedDateTime dateTimeEnd = parseAndAdjustTimezone(dtend, formatter, zoneId);
 
-//        System.out.println("Start Date: " + dateTimeStart);
-//        System.out.println("End Date: " + dateTimeEnd);
-//        System.out.println("******** ");
-
-        int hourStart = dateTimeStart.getHour();
+        int hourStart = dateTimeStart.getHour() + 1;
         int minuteStart = dateTimeStart.getMinute();
 
         int hourEnd = dateTimeEnd.getHour();
@@ -156,7 +158,7 @@ public class ICSParserController {
                 default -> 6;
             };
             int startRow = (dateTimeStart.getDayOfMonth() + startColFirstDayOfMonth) / 7;
-            return new Event(uid, summary, description, location, enseignant, startRow + 1, startCol, 1);
+            return new Event(uid, summary, description, location, enseignant, startRow + 1, startCol, 1, matiere);
         }else{
             int startRow = (hourStart - 8) * 2;
             if (minuteStart == 30){startRow++;}
@@ -176,7 +178,7 @@ public class ICSParserController {
             }
             if (startRow<1){startRow=1;}
             if (startCol == 0){return null;}
-            return new Event(uid, summary, description, location, enseignant, startRow + 1, startCol, rowSpan);
+            return new Event(uid, summary, description, location, enseignant, startRow + 1, startCol, rowSpan, matiere);
         }
     }
 

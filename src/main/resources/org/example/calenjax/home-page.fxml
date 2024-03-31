@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.String?>
+<?import javafx.collections.FXCollections?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.MenuButton?>
@@ -70,7 +73,7 @@
                      <children>
                         <HBox alignment="CENTER" prefHeight="50.0" prefWidth="180.0">
                            <children>
-                              <MenuButton mnemonicParsing="false" prefHeight="26.0" prefWidth="122.0" text="MenuButton">
+                              <MenuButton mnemonicParsing="false" prefHeight="26.0" prefWidth="122.0" text="Semaine">
                                 <items>
                                   <MenuItem fx:id="buttonDay" mnemonicParsing="false" onAction="#handleButtonActionCalendar" text="Jour" />
                                   <MenuItem fx:id="buttonWeek" mnemonicParsing="false" onAction="#handleButtonActionCalendar" text="Semaine" />
@@ -84,6 +87,20 @@
                               <Button fx:id="previous" mnemonicParsing="false" onAction="#handleButtonActionRefresh" text="&lt;" />
                               <Button fx:id="now" mnemonicParsing="false" onAction="#handleButtonActionRefresh" text="Aujourd'hui" />
                               <Button fx:id="after" mnemonicParsing="false" onAction="#handleButtonActionRefresh" text="&gt;" />
+                           </children>
+                        </HBox>
+                        <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
+                           <children>
+                               <ComboBox fx:id="filterComboBox" onAction="#handleFilterSelection" prefHeight="30.0" prefWidth="150.0" promptText="Filtrage">
+                                   <items>
+                                       <FXCollections fx:factory="observableArrayList">
+                                           <String fx:value="Matière" />
+                                           <String fx:value="Groupe" />
+                                           <String fx:value="Salle" />
+                                           <String fx:value="type de cours" />
+                                       </FXCollections>
+                                   </items>
+                               </ComboBox>
                            </children>
                         </HBox>
                         <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
