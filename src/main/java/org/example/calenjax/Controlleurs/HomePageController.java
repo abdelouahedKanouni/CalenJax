@@ -68,6 +68,7 @@ public class HomePageController {
     @FXML
     private TextField rechercheTextField;
     private LocalDateTime actualDate;
+    private String currentFilterValue;
     private String mode = "week";
     private String filePath = null;
     @FXML
@@ -76,6 +77,7 @@ public class HomePageController {
     private ImageView homeImage;
     @FXML
     private VBox parameterBar;
+    @FXML private ComboBox<String> filterComboBox;
     @FXML
     private VBox searchBar;
     @FXML
@@ -206,7 +208,7 @@ public class HomePageController {
     private void toggleMode() {
         isDarkMode = !isDarkMode;
 
-        Scene scene = Stage.getWindows().getFirst().getScene();
+        Scene scene = Stage.getWindows().get(0).getScene();
         scene.getStylesheets().clear();
 
         if (isDarkMode) {
@@ -245,6 +247,48 @@ public class HomePageController {
 
         return countAdjacentButtons <= 1;
     }
+
+    @FXML
+    private void handleFilterSelection() {
+        try {
+            FXMLLoader loader = new FXMLLoader(HelloApplication.class.getResource("filter-popup.fxml"));
+            Parent root = loader.load();
+
+            Stage filterPopup = new Stage();
+            filterPopup.initModality(Modality.APPLICATION_MODAL);
+            filterPopup.setResizable(false);
+            // si on veut filtrer par matière sinon par enseignant
+            if (filterComboBox.getValue().equals("Matière")){
+                filterPopup.setTitle("Filtrer par matière");
+            }
+            else if(filterComboBox.getValue().equals("Groupe")){
+                filterPopup.setTitle("Filtrer par Groupe");
+            }else if(filterComboBox.getValue().equals("Salle")){
+                filterPopup.setTitle("Filtrer par Salle");
+            }
+            else{
+                filterPopup.setTitle("Filtrer par type de cours");
+            }
+
+            Scene scene = new Scene(root);
+            if (isDarkMode) scene.getStylesheets().add("dark.css");
+            else scene.getStylesheets().add("light.css");
+            filterPopup.setScene(scene);
+            filterPopup.show();
+            Button filterButton = (Button) scene.lookup("#filterButton");
+            filterButton.setOnAction(event -> {
+                TextField filterText = (TextField) scene.lookup("#filterText");
+                currentFilterValue = filterText.getText();
+                String filterValue = filterText.getText();
+                refreshDataCalendar("here", null,filterValue);
+
+                filterPopup.close();
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     private boolean isAdjacentVertically(Button button) {
         int buttonRow = GridPane.getRowIndex(button);
@@ -289,7 +333,7 @@ public class HomePageController {
             // Parser le fichier correspondant à la formation ou la salle sélectionnée
             this.filePath = filePath;
             ICSParserController parser = new ICSParserController();
-            refreshDataCalendar("now", null);
+            refreshDataCalendar("now", null,"");
         }
     }
 
@@ -343,7 +387,7 @@ public class HomePageController {
             // Parser le fichier ICS et mettre à jour l'emploi du temps de l'utilisateur
             ICSParserController parser = new ICSParserController();
             this.filePath = destinationPath;
-            refreshDataCalendar("now", null);
+            refreshDataCalendar("now", null,"");
         }
     }
 
@@ -359,7 +403,7 @@ public class HomePageController {
                 try {
                     ICSParserController parser = new ICSParserController();
                     this.filePath = filePath;
-                    refreshDataCalendar("now", null);
+                    refreshDataCalendar("now", null,"");
                 } catch (Exception e) {
                     e.printStackTrace();
                     System.err.println("Erreur lors du chargement de l'emploi du temps personnel de l'utilisateur " + currentUser + ".");
@@ -391,7 +435,7 @@ public class HomePageController {
         calendarDay.setManaged(true);
         this.mode = "day";
 
-        refreshDataCalendar("here", getDay(col));
+        refreshDataCalendar("here", getDay(col),"");
     }
 
     @FXML
@@ -426,7 +470,7 @@ public class HomePageController {
     @FXML
     private void handleButtonActionRefresh(ActionEvent event) {
         Button clickedButton = (Button) event.getSource();
-        refreshDataCalendar(clickedButton.getId(), null);
+        refreshDataCalendar(clickedButton.getId(), null,currentFilterValue);
     }
 
     @FXML
@@ -463,10 +507,10 @@ public class HomePageController {
                 calendarDay.setManaged(false);
             }
         }
-        refreshDataCalendar("now", null);
+        refreshDataCalendar("now", null,"");
     }
 
-    public void refreshDataCalendar(String when, String date) {
+    public void refreshDataCalendar(String when, String date, String filterValue) {
         for (Node node : new ArrayList<>(calendarMonth.getChildren())) {
             Integer rowIndex = GridPane.getRowIndex(node);
             if (rowIndex != null && rowIndex > 0 && rowIndex < 6) {
@@ -491,18 +535,18 @@ public class HomePageController {
             switch (when) {
                 case "previous" -> {
                     this.actualDate = this.actualDate.minusWeeks(1).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
-                    events = parser.parse(this.filePath, this.mode, this.actualDate);
+                    events = parser.parse(this.filePath, this.mode, this.actualDate, filterValue);
                 }
                 case "now" -> {
                     this.actualDate = LocalDateTime.now();
-                    events = parser.parse(this.filePath, this.mode, this.actualDate);
+                    events = parser.parse(this.filePath, this.mode, this.actualDate, filterValue);
                 }
                 case "here" -> {
-                    events = parser.parse(this.filePath, this.mode, this.actualDate);
+                    events = parser.parse(this.filePath, this.mode, this.actualDate, filterValue);
                 }
                 case "after" -> {
                     this.actualDate = this.actualDate.plusWeeks(1).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));;
-                    events = parser.parse(this.filePath, this.mode, this.actualDate);
+                    events = parser.parse(this.filePath, this.mode, this.actualDate, filterValue);
                 }
             }
             for (int i = 1; i<6; i++ ){
@@ -523,12 +567,12 @@ public class HomePageController {
                 case "previous" -> {
                     this.actualDate = this.actualDate.minusDays(1);
                     labelDay.setText(this.actualDate.format(DateTimeFormatter.ofPattern("EEEE", Locale.FRENCH)) + " " + this.actualDate.format(DateTimeFormatter.ofPattern("d", Locale.FRENCH)));
-                    events = parser.parse(this.filePath, this.mode, this.actualDate);
+                    events = parser.parse(this.filePath, this.mode, this.actualDate,filterValue);
                 }
                 case "now" -> {
                     this.actualDate =  LocalDateTime.now();
                     labelDay.setText(this.actualDate.format(DateTimeFormatter.ofPattern("EEEE", Locale.FRENCH)) + " " + this.actualDate.format(DateTimeFormatter.ofPattern("d", Locale.FRENCH)));
-                    events = parser.parse(this.filePath, this.mode, this.actualDate);
+                    events = parser.parse(this.filePath, this.mode, this.actualDate,filterValue);
                 }
                 case "here" -> {
                     DayOfWeek desiredDayOfWeek;
@@ -541,12 +585,12 @@ public class HomePageController {
                     LocalDate dateTmp = LocalDate.from(this.actualDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)));
                     this.actualDate = dateTmp.with(TemporalAdjusters.nextOrSame(desiredDayOfWeek)).atStartOfDay();
                     labelDay.setText(this.actualDate.format(DateTimeFormatter.ofPattern("EEEE", Locale.FRENCH)) + " " + this.actualDate.format(DateTimeFormatter.ofPattern("d", Locale.FRENCH)));
-                    events = parser.parse(this.filePath, this.mode, this.actualDate);
+                    events = parser.parse(this.filePath, this.mode, this.actualDate,filterValue);
                 }
                 case "after" -> {
                     this.actualDate = this.actualDate.plusDays(1);
                     labelDay.setText(this.actualDate.format(DateTimeFormatter.ofPattern("EEEE", Locale.FRENCH)) + " " + this.actualDate.format(DateTimeFormatter.ofPattern("d", Locale.FRENCH)));
-                    events = parser.parse(this.filePath, this.mode, this.actualDate);
+                    events = parser.parse(this.filePath, this.mode, this.actualDate,filterValue);
                 }
             }
             for ( Event e : events) {
@@ -557,15 +601,15 @@ public class HomePageController {
             switch (when) {
                 case "previous" -> {
                     this.actualDate = this.actualDate.minusMonths(1).withDayOfMonth(1);
-                    events = parser.parse(this.filePath, this.mode, this.actualDate);
+                    events = parser.parse(this.filePath, this.mode, this.actualDate,filterValue);
                 }
                 case "now" -> {
                     this.actualDate = LocalDateTime.now().withDayOfMonth(1);
-                    events = parser.parse(this.filePath, this.mode, this.actualDate);
+                    events = parser.parse(this.filePath, this.mode, this.actualDate,filterValue);
                 }
                 case "after" -> {
                     this.actualDate = this.actualDate.plusMonths(1).withDayOfMonth(1);
-                    events = parser.parse(this.filePath, this.mode, this.actualDate);
+                    events = parser.parse(this.filePath, this.mode, this.actualDate,filterValue);
                 }
             }
             LocalDateTime firstDayOfMonth = actualDate.withDayOfMonth(1);
@@ -917,7 +961,7 @@ public class HomePageController {
                 else{
                     sendEvent(calendarDay, startRow, startCol, rowSpan, title, location, description, color);
                 }
-                refreshDataCalendar("here", null);
+                refreshDataCalendar("here", null,"");
                 eventStage.close();
             });
         } catch (IOException e) {
