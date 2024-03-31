@@ -109,7 +109,7 @@ public class HomePageController {
 
     private void setTypeCalendar(String newValue){
         this.typeCalendar = newValue;
-        if (this.typeCalendar.equals("personnal") || this.typeCalendar.equals("room")){
+        if (this.typeCalendar.equals("personnal") || (this.typeCalendar.equals("room") && typeCurrentUser.equals("enseignant"))){
             addEvent.setDisable(false);
             addEvent.setVisible(true);
             addEvent.setManaged(true);
@@ -358,6 +358,7 @@ public class HomePageController {
             this.mode="week";
             // Parser le fichier correspondant à la formation ou la salle sélectionnée
             this.filePath = filePath;
+            this.currentFilterValue = "";
             ICSParserController parser = new ICSParserController();
             refreshDataCalendar("now", null,"");
         }
@@ -807,8 +808,6 @@ public class HomePageController {
         GridPane.setRowIndex(eventButton, e.getStartRow());
         GridPane.setColumnIndex(eventButton, e.getStartCol());
         GridPane.setRowSpan(eventButton, e.getRowSpan());
-        GridPane.setFillHeight(eventButton, true);
-        GridPane.setFillWidth(eventButton, true);
         eventButton.setMaxHeight(Double.MAX_VALUE);
         eventButton.setMaxWidth(Double.MAX_VALUE);
 
