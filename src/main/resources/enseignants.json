@@ -1,7 +1,1 @@
-[
-  {
-    "identifiant": "abdelProf",
-    "motDePasse": "abdelProf"
-  }
-
-]
+[{"identifiant":"abdelProf","motDePasse":"abdelProf","isDark":true}]
