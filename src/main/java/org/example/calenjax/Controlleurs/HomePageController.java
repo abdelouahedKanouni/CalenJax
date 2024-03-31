@@ -764,6 +764,11 @@ public class HomePageController {
         GridPane.setFillWidth(eventButton, true);
         eventButton.setMaxHeight(Double.MAX_VALUE);
         eventButton.setMaxWidth(Double.MAX_VALUE);
+
+        Tooltip tooltip = new Tooltip(e.getDescription());
+        tooltip.setShowDelay(Duration.ZERO);
+        Tooltip.install(eventButton, tooltip);
+
         calendarWeek.getChildren().add(eventButton);
 
         eventButtons.add(eventButton);
