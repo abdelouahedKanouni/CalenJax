@@ -241,8 +241,7 @@ public class HomePageController {
         }
     }
 
-    private void toggleSelectionBackgroundButton
-            (Button button) {
+    private void toggleSelectionBackgroundButton (Button button) {
 
         if (selectedButtons.contains(button)) {
             if (canDeleteButton(button)) {
@@ -512,8 +511,9 @@ public class HomePageController {
         calendarWeek.getChildren().removeAll(eventButtons);
         calendarDay.getChildren().removeAll(eventButtons);
         eventButtons.clear();
-        calendarWeek.getChildren().removeAll(selectedButtons);
-        calendarDay.getChildren().removeAll(selectedButtons);
+        for (Button button : selectedButtons) {
+            button.setStyle("");
+        }
         selectedButtons.clear();
 
         parameterBar.setManaged(true);
@@ -1016,11 +1016,12 @@ public class HomePageController {
             minuteEnd = 30;
         }
 
-        Date DtStart = new Date(this.year - 1900, this.month, Integer.parseInt(day), hourStart - 1, minuteStart, 0);
-        Date DtEnd = new Date(this.year - 1900, this.month, Integer.parseInt(day), hourEnd - 1, minuteEnd, 0);
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd'T'HHmmss'Z'");
+        Date DtStart = new Date(this.year - 1900, this.month, Integer.parseInt(day), hourStart, minuteStart, 0);
+        Date DtEnd = new Date(this.year - 1900, this.month, Integer.parseInt(day), hourEnd, minuteEnd, 0);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd'T'HHmmssZ");
         String formattedDtStart = sdf.format(DtStart);
         String formattedDtEnd = sdf.format(DtEnd);
+
         System.out.println(day);
         System.out.println("start at : " + hourStart + "h" + minuteStart );
         System.out.println("end at : " + hourEnd + "h" + minuteEnd );

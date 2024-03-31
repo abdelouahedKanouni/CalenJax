@@ -196,23 +196,28 @@ public class ICSParserController {
         try {
             return ZonedDateTime.parse(input, formatter).withZoneSameInstant(zoneId);
         } catch (DateTimeParseException e) {
-            String inputWithDefaultTimezone = input + "T000000Z";
-            return ZonedDateTime.parse(inputWithDefaultTimezone, formatter).withZoneSameInstant(zoneId);
+            try {
+                String inputWithDefaultTimezone = input + "T000000Z";
+                return ZonedDateTime.parse(inputWithDefaultTimezone, formatter).withZoneSameInstant(zoneId);
+            } catch (DateTimeParseException e1) {
+                String inputWithDefaultTimezone = input + "Z";
+                return ZonedDateTime.parse(inputWithDefaultTimezone, formatter).withZoneSameInstant(zoneId);
+            }
         }
     }
 
-    public void addEvent(String Uid, String DtStart, String DtEnd, String title, String Location, String Description){
+    public void addEvent(String Uid, String dtStart, String dtEnd, String title, String Location, String Description){
         try {
-            // Charger le fichier .ics existant en tant que calendrier
             FileInputStream fis = new FileInputStream(this.lastFilePath);
             CalendarBuilder builder = new CalendarBuilder();
             Calendar calendar = builder.build(fis);
 
+
             VEvent vevent = new VEvent()
                     .withProperty(new Uid(Uid))
                     .withProperty(new Summary(title))
-                    .withProperty(new DtStart<>(DtStart))
-                    .withProperty(new DtEnd<>(DtEnd))
+                    .withProperty(new DtStart<>(dtStart))
+                    .withProperty(new DtEnd<>(dtEnd))
                     .withProperty(new Location(Location))
                     .withProperty(new Description(Description))
                     .getFluentTarget();
